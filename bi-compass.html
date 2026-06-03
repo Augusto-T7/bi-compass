@@ -1,0 +1,3033 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BI Compass — Navigate Your Data Journey</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1e2d45;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #7c3aed;
+    --success: #10b981;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --text: #e2e8f0;
+    --text-muted: #64748b;
+    --text-dim: #94a3b8;
+  }
+
+  /* SEPIA THEME */
+  body.theme-sepia {
+    --bg: #f4efe6;
+    --surface: #ede8df;
+    --surface2: #e6e0d5;
+    --border: #d4c9b8;
+    --accent: #8b5e3c;
+    --accent2: #c0392b;
+    --accent3: #6d4c8e;
+    --success: #2e7d32;
+    --warning: #e65100;
+    --danger: #c62828;
+    --text: #2c1810;
+    --text-muted: #6b5744;
+    --text-dim: #8b7355;
+  }
+  body.theme-sepia::before { display: none; }
+  body.theme-sepia .logo-icon { background: linear-gradient(135deg, #8b5e3c, #6d4c8e); }
+
+  /* DARKER DARK THEME */
+  body.theme-darker {
+    --bg: #000000;
+    --surface: #060810;
+    --surface2: #0a0d18;
+    --border: #111520;
+    --accent: #00f0ff;
+    --accent2: #ff4500;
+    --accent3: #9d00ff;
+    --success: #00ff88;
+    --warning: #ffaa00;
+    --danger: #ff2020;
+    --text: #ffffff;
+    --text-muted: #4a5568;
+    --text-dim: #6b7280;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE OVERLAY */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* HEADER */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(10,14,26,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -0.02em;
+  }
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, var(--accent), var(--accent3));
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+  }
+
+  .logo span { color: var(--accent); }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .lang-toggle {
+    display: flex;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .theme-btn {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border: none;
+    background: var(--surface);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid var(--border);
+  }
+  .theme-btn:first-child { border-radius: 8px 0 0 8px; border-right: none; }
+  .theme-btn:last-child { border-radius: 0 8px 8px 0; border-left: none; }
+  .theme-btn.active { background: var(--accent); color: #000; font-weight: 700; }
+
+  .lang-btn {
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.8rem;
+    font-weight: 500;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .lang-btn.active {
+    background: var(--accent);
+    color: #000;
+    font-weight: 700;
+  }
+
+  .progress-pill {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+  }
+
+  .progress-pill span { color: var(--accent); font-weight: 600; }
+
+  /* MAIN LAYOUT */
+  .app-layout {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: calc(100vh - 64px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+  }
+
+  .sidebar-section {
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-label {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .module-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+
+  .module-item:hover {
+    background: var(--surface2);
+    border-color: var(--border);
+  }
+
+  .module-item.active {
+    background: rgba(0, 212, 255, 0.08);
+    border-color: rgba(0, 212, 255, 0.3);
+  }
+
+  .module-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    flex-shrink: 0;
+  }
+
+  .module-item.active .module-dot { background: rgba(0,212,255,0.15); }
+  .module-item:not(.active) .module-dot { background: var(--surface2); }
+
+  .module-info { flex: 1; min-width: 0; }
+  .module-name {
+    font-size: 0.82rem;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .module-item.active .module-name { color: var(--accent); }
+
+  .module-tag {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    margin-top: 1px;
+  }
+
+  .module-lock {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .exam-weight {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 12px;
+    margin: 0 1rem;
+  }
+
+  .exam-weight-title {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+  }
+
+  .weight-bar-item {
+    margin-bottom: 8px;
+  }
+
+  .weight-bar-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    margin-bottom: 3px;
+  }
+
+  .weight-bar-track {
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .weight-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.8s ease;
+  }
+
+  /* CONTENT */
+  .content {
+    padding: 2rem;
+    max-width: 1100px;
+  }
+
+  /* PAGES */
+  .page { display: none; }
+  .page.active { display: block; }
+
+  /* MODULE HERO */
+  .module-hero {
+    background: linear-gradient(135deg, rgba(0,212,255,0.06) 0%, rgba(124,58,237,0.06) 100%);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .module-hero::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -10%;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0,212,255,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .module-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--accent);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+  }
+
+  .module-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+  }
+
+  .module-subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 1.5rem;
+  }
+
+  .module-meta {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .meta-item strong { color: var(--text); }
+
+  /* TABS */
+  .tab-nav {
+    display: flex;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 1.5rem;
+    width: fit-content;
+  }
+
+  .tab-btn {
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .tab-btn.active {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+
+  .tab-btn:hover:not(.active) { color: var(--text); }
+
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* CONCEPT CARDS */
+  .concept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .concept-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    transition: border-color 0.2s;
+  }
+
+  .concept-card:hover { border-color: rgba(0,212,255,0.3); }
+
+  .concept-card-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 0.75rem;
+  }
+
+  .concept-icon {
+    font-size: 1.25rem;
+    width: 36px;
+    height: 36px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .concept-card-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .concept-card-en {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  .concept-card-body {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    line-height: 1.6;
+  }
+
+  .concept-card-body .highlight {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* DASHBOARD SECTION */
+  .dashboard-wrapper {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .dashboard-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dashboard-title-block {}
+  .dashboard-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .dashboard-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .dashboard-controls {
+    display: flex;
+    gap: 8px;
+  }
+
+  .dash-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.78rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .dash-btn:hover, .dash-btn.active {
+    background: rgba(0,212,255,0.1);
+    border-color: rgba(0,212,255,0.4);
+    color: var(--accent);
+  }
+
+  .kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .kpi-card {
+    background: var(--surface);
+    padding: 1rem 1.25rem;
+  }
+
+  .kpi-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .kpi-value {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .kpi-delta {
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
+  .kpi-delta.up { color: var(--success); }
+  .kpi-delta.down { color: var(--danger); }
+  .kpi-delta.warn { color: var(--warning); }
+
+  .charts-grid {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .chart-panel {
+    background: var(--surface);
+    padding: 1.25rem;
+  }
+
+  .chart-panel-title {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .chart-container { position: relative; }
+
+  /* STORYTELLING LAYER */
+  .story-panel {
+    background: linear-gradient(135deg, rgba(0,212,255,0.04), rgba(124,58,237,0.04));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .story-panel-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .story-tag {
+    background: rgba(0,212,255,0.1);
+    border: 1px solid rgba(0,212,255,0.3);
+    color: var(--accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .story-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .story-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .story-step-num {
+    width: 24px;
+    height: 24px;
+    background: rgba(0,212,255,0.15);
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--accent);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .story-step-text {
+    font-size: 0.85rem;
+    line-height: 1.6;
+    color: var(--text-dim);
+  }
+
+  .story-step-text strong { color: var(--text); }
+
+  /* CHALLENGE MODE */
+  .challenge-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .challenge-header {
+    background: linear-gradient(135deg, rgba(255,107,53,0.1), rgba(239,68,68,0.08));
+    border-bottom: 1px solid rgba(255,107,53,0.2);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .challenge-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent2);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .challenge-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .errors-found {
+    font-size: 0.8rem;
+    color: var(--text-dim);
+  }
+
+  .errors-found span { color: var(--accent2); font-weight: 700; }
+
+  .challenge-body {
+    padding: 1.5rem;
+  }
+
+  /* ERROR DASHBOARD (con errores deliberados) */
+  .error-dashboard {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+  }
+
+  .error-kpi-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .error-kpi {
+    background: var(--surface2);
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+  }
+
+  .error-kpi:hover { background: rgba(255,255,255,0.03); }
+  .error-kpi.found-error { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.3); }
+  .error-kpi.correct { background: rgba(16,185,129,0.08); }
+
+  .error-kpi-label {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 3px;
+  }
+  .error-kpi-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+  .error-kpi-delta { font-size: 0.72rem; color: var(--text-muted); }
+
+  .error-charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border);
+  }
+
+  .error-chart-panel {
+    background: var(--surface2);
+    padding: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .error-chart-panel canvas {
+    display: block;
+    height: 140px !important;
+    max-height: 140px !important;
+  }
+  #echart3 canvas {
+    height: 100px !important;
+    max-height: 100px !important;
+  }
+
+  .error-chart-panel:hover { background: rgba(255,255,255,0.02); }
+  .error-chart-panel.found-error { background: rgba(239,68,68,0.06); border: 2px solid rgba(239,68,68,0.3); }
+  .error-chart-panel.correct { background: rgba(16,185,129,0.06); }
+
+  .error-chart-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  /* CLICK TARGETS */
+  .clickable-error {
+    cursor: crosshair;
+    border-radius: 4px;
+    transition: box-shadow 0.2s;
+  }
+  .clickable-error:hover { box-shadow: 0 0 0 2px rgba(255,107,53,0.4); }
+
+  /* SOLUTION REVEAL */
+  .solution-panel {
+    display: none;
+    background: rgba(16,185,129,0.05);
+    border: 1px solid rgba(16,185,129,0.2);
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 1rem;
+  }
+
+  .solution-panel.visible { display: block; }
+
+  .solution-header {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    color: var(--success);
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .error-item {
+    display: flex;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+
+  .error-item:last-child { border-bottom: none; }
+
+  .error-num {
+    width: 22px;
+    height: 22px;
+    background: rgba(239,68,68,0.15);
+    border: 1px solid rgba(239,68,68,0.3);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: var(--danger);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .error-description { font-size: 0.82rem; line-height: 1.6; color: var(--text-dim); }
+  .error-description strong { color: var(--danger); }
+  .error-rule { color: var(--text-dim); font-size: 0.78rem; margin-top: 3px; }
+  .error-rule em { color: var(--success); font-style: normal; }
+
+  /* QUIZ */
+  .quiz-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .quiz-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+  }
+
+  .quiz-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .quiz-progress {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+  }
+
+  .quiz-q {
+    display: none;
+  }
+  .quiz-q.active { display: block; }
+
+  .quiz-question {
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .quiz-context {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 1rem;
+    padding: 10px;
+    background: var(--surface2);
+    border-radius: 8px;
+    border-left: 3px solid var(--accent3);
+  }
+
+  .quiz-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-option {
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    transition: all 0.2s;
+    text-align: left;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .quiz-option:hover:not(.selected):not(.correct):not(.wrong) {
+    border-color: rgba(0,212,255,0.4);
+    background: rgba(0,212,255,0.04);
+  }
+
+  .quiz-option.correct { background: rgba(16,185,129,0.12); border-color: var(--success); color: var(--success); }
+  .quiz-option.wrong { background: rgba(239,68,68,0.08); border-color: var(--danger); color: var(--danger); }
+  .quiz-option.selected { border-color: var(--accent); }
+
+  .quiz-feedback {
+    display: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  .quiz-feedback.correct-fb { background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2); color: var(--success); display: block; }
+  .quiz-feedback.wrong-fb { background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); color: #fca5a5; display: block; }
+
+  .quiz-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-primary {
+    padding: 10px 20px;
+    background: var(--accent);
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 700;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: #00b8d9; }
+
+  .btn-secondary {
+    padding: 10px 20px;
+    background: transparent;
+    color: var(--text-dim);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+  .btn-danger {
+    padding: 8px 16px;
+    background: transparent;
+    color: var(--accent2);
+    border: 1px solid rgba(255,107,53,0.3);
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-danger:hover { background: rgba(255,107,53,0.1); }
+
+  /* SCORE */
+  .score-display {
+    text-align: center;
+    padding: 2rem;
+  }
+  .score-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+  }
+  .score-big.great { color: var(--success); }
+  .score-big.ok { color: var(--warning); }
+  .score-big.bad { color: var(--danger); }
+
+  /* HINT BUTTON */
+  .hint-area {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .hint-box {
+    display: none;
+    background: rgba(245,158,11,0.08);
+    border: 1px solid rgba(245,158,11,0.2);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 0.82rem;
+    color: #fcd34d;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .hint-box.visible { display: block; }
+
+  /* ROADMAP */
+  .roadmap-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .roadmap-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+    font-size: 1rem;
+  }
+
+  .cert-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .cert-item {
+    display: flex;
+    gap: 1rem;
+    position: relative;
+  }
+
+  .cert-item::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 30px;
+    bottom: -20px;
+    width: 1px;
+    background: var(--border);
+  }
+
+  .cert-item:last-child::before { display: none; }
+
+  .cert-dot-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 4px;
+    width: 32px;
+    flex-shrink: 0;
+  }
+
+  .cert-dot {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.85rem;
+    border: 2px solid;
+    background: var(--surface);
+    z-index: 1;
+  }
+
+  .cert-dot.current { border-color: var(--accent); background: rgba(0,212,255,0.1); }
+  .cert-dot.next { border-color: var(--border); }
+  .cert-dot.future { border-color: var(--border); opacity: 0.5; }
+
+  .cert-content {
+    padding: 0 0 1.5rem 0;
+  }
+
+  .cert-name {
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+  }
+
+  .cert-item.current-cert .cert-name { color: var(--accent); }
+
+  .cert-detail {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .cert-concepts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-top: 6px;
+  }
+
+  .cert-tag {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .page.active { animation: fadeIn 0.3s ease; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  .pulse { animation: pulse 2s infinite; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .app-layout { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .kpi-row { grid-template-columns: repeat(2,1fr); }
+    .charts-grid { grid-template-columns: 1fr; }
+    .error-kpi-row { grid-template-columns: repeat(2,1fr); }
+    .error-charts-row { grid-template-columns: 1fr; }
+  }
+
+  .lang-es, .lang-en { display: none; }
+  .lang-active-es .lang-es { display: block; }
+  .lang-active-es .lang-es-inline { display: inline; }
+  .lang-active-es .lang-en-inline { display: none; }
+  .lang-active-en .lang-en { display: block; }
+  .lang-active-en .lang-en-inline { display: inline; }
+  .lang-active-en .lang-es-inline { display: none; }
+
+  span.lang-es-inline, span.lang-en-inline { display: inline; }
+</style>
+</head>
+
+<body class="lang-active-es">
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-icon">🧭</div>
+    BI <span>Compass</span>
+  </div>
+  <div class="header-right">
+    <div class="progress-pill"><span class="lang-es-inline">Módulo</span><span class="lang-en-inline">Module</span> <span>1</span> <span class="lang-es-inline">de</span><span class="lang-en-inline">of</span> 6 · PL-300</div>
+    <div class="lang-toggle">
+      <button class="theme-btn active" onclick="setTheme('default',this)" title="Default">🌑</button>
+      <button class="theme-btn" onclick="setTheme('darker',this)" title="Darker">⬛</button>
+      <button class="theme-btn" onclick="setTheme('sepia',this)" title="Sepia">📜</button>
+    </div>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('en')">EN</button>
+    </div>
+  </div>
+</header>
+
+<div class="app-layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label"><span class="lang-es-inline">Módulos PL-300</span><span class="lang-en-inline">PL-300 Modules</span></div>
+
+      <div class="module-item active" onclick="showPage('m1')">
+        <div class="module-dot">📦</div>
+        <div class="module-info">
+          <div class="module-name">
+            <span class="lang-es-inline">Preparar Datos</span>
+            <span class="lang-en-inline">Prepare Data</span>
+          </div>
+          <div class="module-tag">Power Query · M Language</div>
+        </div>
+      </div>
+
+      <div class="module-item" onclick="alertBilingual('Módulo 2 próximamente','Module 2 coming soon')">
+        <div class="module-dot">🔗</div>
+        <div class="module-info">
+          <div class="module-name">
+            <span class="lang-es-inline">Modelar Datos</span>
+            <span class="lang-en-inline">Model Data</span>
+          </div>
+          <div class="module-tag">Star Schema · Relaciones</div>
+        </div>
+        <div class="module-lock">🔒</div>
+      </div>
+
+      <div class="module-item" onclick="alertBilingual('Módulo 3 próximamente','Module 3 coming soon')">
+        <div class="module-dot">⚡</div>
+        <div class="module-info">
+          <div class="module-name">DAX Core</div>
+          <div class="module-tag">Measures · Calculated Cols</div>
+        </div>
+        <div class="module-lock">🔒</div>
+      </div>
+
+      <div class="module-item" onclick="alertBilingual('Módulo 4 próximamente','Module 4 coming soon')">
+        <div class="module-dot">📊</div>
+        <div class="module-info">
+          <div class="module-name">
+            <span class="lang-es-inline">Visualizar Datos</span>
+            <span class="lang-en-inline">Visualize Data</span>
+          </div>
+          <div class="module-tag">Finance · Supply Chain</div>
+        </div>
+        <div class="module-lock">🔒</div>
+      </div>
+
+      <div class="module-item" onclick="alertBilingual('Módulo 5 próximamente','Module 5 coming soon')">
+        <div class="module-dot">🎯</div>
+        <div class="module-info">
+          <div class="module-name">Storytelling</div>
+          <div class="module-tag">McKinsey · Executive</div>
+        </div>
+        <div class="module-lock">🔒</div>
+      </div>
+
+      <div class="module-item" onclick="alertBilingual('Módulo 6 próximamente','Module 6 coming soon')">
+        <div class="module-dot">🔐</div>
+        <div class="module-info">
+          <div class="module-name">
+            <span class="lang-es-inline">Implementar</span>
+            <span class="lang-en-inline">Deploy & Manage</span>
+          </div>
+          <div class="module-tag">RLS · Workspaces</div>
+        </div>
+        <div class="module-lock">🔒</div>
+      </div>
+    </div>
+
+    <div class="exam-weight">
+      <div class="exam-weight-title">Peso en Examen PL-300</div>
+      <div class="weight-bar-item">
+        <div class="weight-bar-label"><span>Preparar datos</span><span style="color:var(--accent)">25–30%</span></div>
+        <div class="weight-bar-track"><div class="weight-bar-fill" style="width:28%;background:var(--accent)"></div></div>
+      </div>
+      <div class="weight-bar-item">
+        <div class="weight-bar-label"><span>Modelar datos</span><span>25–30%</span></div>
+        <div class="weight-bar-track"><div class="weight-bar-fill" style="width:28%;background:var(--accent3)"></div></div>
+      </div>
+      <div class="weight-bar-item">
+        <div class="weight-bar-label"><span>Visualizar y analizar</span><span>25–30%</span></div>
+        <div class="weight-bar-track"><div class="weight-bar-fill" style="width:28%;background:var(--success)"></div></div>
+      </div>
+      <div class="weight-bar-item">
+        <div class="weight-bar-label"><span>Administrar y asegurar</span><span>15–20%</span></div>
+        <div class="weight-bar-track"><div class="weight-bar-fill" style="width:18%;background:var(--warning)"></div></div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="content">
+
+    <!-- MODULE 1 PAGE -->
+    <div id="m1" class="page active">
+
+      <!-- HERO -->
+      <div class="module-hero">
+        <div class="module-badge">📦 MÓDULO 1 · PL-300 DOMAIN 1</div>
+        <div class="module-title">
+          <span class="lang-es-inline">Preparar y Transformar Datos</span>
+          <span class="lang-en-inline">Prepare and Transform Data</span>
+        </div>
+        <div class="module-subtitle lang-es">
+          Antes de construir un dashboard, tus datos deben ser confiables. Un análisis sobre datos sucios es peor que no tener análisis — genera decisiones incorrectas. Aquí aprenderás a limpiar, transformar y validar datos con Power Query antes de que lleguen a un visual.
+        </div>
+        <div class="module-subtitle lang-en">
+          Before building a dashboard, your data must be trustworthy. Analysis on dirty data is worse than no analysis — it drives wrong decisions. Here you'll learn to clean, transform and validate data with Power Query before it ever reaches a visual.
+        </div>
+        <div class="module-meta">
+          <div class="meta-item">⏱ <strong>2–3 hrs</strong></div>
+          <div class="meta-item">🎯 <strong>25–30%</strong> <span style="color:var(--text-muted)" class="lang-es-inline">del examen</span><span style="color:var(--text-muted)" class="lang-en-inline">of exam</span></div>
+          <div class="meta-item">📊 <strong>3</strong> <span style="color:var(--text-muted)">dashboards</span></div>
+          <div class="meta-item">🧩 <strong>9</strong> <span style="color:var(--text-muted)" class="lang-es-inline">ejercicios</span><span style="color:var(--text-muted)" class="lang-en-inline">exercises</span></div>
+        </div>
+      </div>
+
+      <!-- TABS -->
+      <div class="tab-nav">
+        <button class="tab-btn active" onclick="showTab('concepts','m1')">
+          <span class="lang-es-inline">📚 Conceptos</span>
+          <span class="lang-en-inline">📚 Concepts</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('dashboard','m1')">
+          <span class="lang-es-inline">📊 Dashboard</span>
+          <span class="lang-en-inline">📊 Dashboard</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('challenge','m1')">
+          <span class="lang-es-inline">⚠️ Reto</span>
+          <span class="lang-en-inline">⚠️ Challenge</span>
+        </button>
+        <button class="tab-btn" onclick="showTab('quiz','m1')">Quiz PL-300</button>
+        <button class="tab-btn" onclick="showTab('roadmap','m1')">🗺️ Roadmap</button>
+      </div>
+
+      <!-- TAB: CONCEPTS -->
+      <div id="tab-concepts-m1" class="tab-content active">
+
+        <div class="concept-grid">
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">🔄</div>
+              <div>
+                <div class="concept-card-title lang-es">ETL — Extraer, Transformar, Cargar</div>
+                <div class="concept-card-title lang-en">ETL — Extract, Transform, Load</div>
+                <div class="concept-card-en">Extract · Transform · Load</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              Es el proceso central de Power Query. <span class="highlight">Extraes</span> datos de una fuente (Excel, SQL, CSV), los <span class="highlight">transformas</span> (limpias, filtras, renombras, combinas) y los <span class="highlight">cargas</span> al modelo de datos.<br><br>
+              <em>Analogía:</em> Un chef recibe ingredientes crudos del mercado (<strong>Extract</strong>), los lava, corta y mezcla según la receta (<strong>Transform</strong>), y los sirve en el plato al cliente (<strong>Load</strong>). Sin transformación, los ingredientes crudos no son una comida.
+            </div>
+            <div class="concept-card-body lang-en">
+              This is the core process of Power Query. You <span class="highlight">Extract</span> data from a source (Excel, SQL, CSV), <span class="highlight">Transform</span> it (clean, filter, rename, combine), and <span class="highlight">Load</span> it into the data model.<br><br>
+              <em>Analogy:</em> A chef receives raw ingredients from the market (<strong>Extract</strong>), washes, cuts and mixes them following a recipe (<strong>Transform</strong>), and serves the finished dish to the customer (<strong>Load</strong>). Without transformation, raw ingredients are not a meal.
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">🧹</div>
+              <div>
+                <div class="concept-card-title lang-es">Calidad de Datos</div>
+                <div class="concept-card-title lang-en">Data Quality</div>
+                <div class="concept-card-en">Null · Duplicate · Type Error</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              Un dataset tiene 3 problemas principales: <span class="highlight">Nulos</span> (campos vacíos), <span class="highlight">Duplicados</span> (registros repetidos) y <span class="highlight">Errores de tipo</span> (un número guardado como texto).<br><br>
+              Power BI te muestra la calidad de cada columna con barras de color en el Column Quality view. <span class="highlight">Verde = válido, Amarillo = vacío, Rojo = error.</span>
+            </div>
+            <div class="concept-card-body lang-en">
+              A dataset has 3 main problems: <span class="highlight">Nulls</span> (empty fields), <span class="highlight">Duplicates</span> (repeated records) and <span class="highlight">Type errors</span> (a number stored as text).<br><br>
+              Power BI shows column quality with color bars in Column Quality view. <span class="highlight">Green = valid, Yellow = empty, Red = error.</span>
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">📋</div>
+              <div>
+                <div class="concept-card-title lang-es">Applied Steps (Pasos Aplicados)</div>
+                <div class="concept-card-title lang-en">Applied Steps</div>
+                <div class="concept-card-en">M Language · Query Folding</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              Cada transformación en Power Query genera un <span class="highlight">paso aplicado</span>. Son auditables, reversibles y ordenados. El lenguaje detrás es <span class="highlight">M (Power Query Formula Language)</span>.<br><br>
+              Ejemplo: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.78rem">= Table.SelectRows(Source, each [Amount] > 0)</code>
+            </div>
+            <div class="concept-card-body lang-en">
+              Each transformation in Power Query generates an <span class="highlight">applied step</span>. They are auditable, reversible and ordered. The language behind them is <span class="highlight">M (Power Query Formula Language)</span>.<br><br>
+              Example: <code style="background:var(--surface2);padding:2px 6px;border-radius:4px;font-size:0.78rem">= Table.SelectRows(Source, each [Amount] > 0)</code>
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">🔗</div>
+              <div>
+                <div class="concept-card-title lang-es">Combinar Datos</div>
+                <div class="concept-card-title lang-en">Combining Data</div>
+                <div class="concept-card-en">Merge · Append · Join</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              <span class="highlight">Merge</span>: Une dos tablas por una columna común (como un VLOOKUP, pero mejor). <span class="highlight">Append</span>: Apila dos tablas con las mismas columnas (agregar nuevas filas).<br><br>
+              Tipos de Merge: Left Outer, Right Outer, Inner, Full Outer. El examen PL-300 pregunta sobre esto con frecuencia.
+            </div>
+            <div class="concept-card-body lang-en">
+              <span class="highlight">Merge</span>: Joins two tables by a common column (like VLOOKUP, but better). <span class="highlight">Append</span>: Stacks two tables with the same columns (add new rows).<br><br>
+              Merge types: Left Outer, Right Outer, Inner, Full Outer. The PL-300 exam asks about this frequently.
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">⚡</div>
+              <div>
+                <div class="concept-card-title lang-es">Query Folding</div>
+                <div class="concept-card-title lang-en">Query Folding</div>
+                <div class="concept-card-en">Performance · SQL Push-down</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              Cuando Power Query puede <span class="highlight">traducir tus transformaciones en SQL</span> y ejecutarlas en el servidor de datos (no en tu PC), eso se llama Query Folding. Es más rápido y eficiente.<br><br>
+              Si agregas un paso personalizado en M que no puede traducirse, el folding se <span class="highlight" style="color:var(--danger)">rompe</span> — todo lo que sigue corre localmente.
+            </div>
+            <div class="concept-card-body lang-en">
+              When Power Query can <span class="highlight">translate your transformations into SQL</span> and run them on the data server (not your PC), that's called Query Folding. It's faster and more efficient.<br><br>
+              If you add a custom M step that can't be translated, folding <span class="highlight" style="color:var(--danger)">breaks</span> — everything after runs locally.
+            </div>
+          </div>
+
+          <div class="concept-card">
+            <div class="concept-card-header">
+              <div class="concept-icon">🏷️</div>
+              <div>
+                <div class="concept-card-title lang-es">Tipos de Datos</div>
+                <div class="concept-card-title lang-en">Data Types</div>
+                <div class="concept-card-en">Text · Number · Date · Boolean</div>
+              </div>
+            </div>
+            <div class="concept-card-body lang-es">
+              El tipo de dato de una columna determina qué operaciones puedes hacer. <span class="highlight">Error crítico</span>: una fecha guardada como texto no puede usarse en cálculos de tiempo. Un ID numérico guardado como número puede sumarse accidentalmente.<br><br>
+              Regla: <span class="highlight">IDs → Texto. Importes → Decimal. Fechas → Date.</span>
+            </div>
+            <div class="concept-card-body lang-en">
+              The data type of a column determines what operations you can perform. <span class="highlight">Critical error</span>: a date stored as text can't be used in time calculations. A numeric ID stored as number can be accidentally summed.<br><br>
+              Rule: <span class="highlight">IDs → Text. Amounts → Decimal. Dates → Date.</span>
+            </div>
+          </div>
+
+          <!-- NEW CARD: DirectLake / DirectQuery / Import — Exam-required -->
+          <div style="margin-top:1rem">
+            <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent2);margin-bottom:0.75rem;display:flex;align-items:center;gap:6px;">
+              <span style="background:rgba(255,107,53,0.12);border:1px solid rgba(255,107,53,0.3);padding:2px 10px;border-radius:20px;">
+                <span class="lang-es-inline">⚡ Concepto clave en examen — Actualización Abril 2026</span>
+                <span class="lang-en-inline">⚡ Exam key concept — April 2026 Update</span>
+              </span>
+            </div>
+
+            <div style="background:var(--surface);border:1px solid rgba(255,107,53,0.25);border-radius:12px;overflow:hidden;">
+              <div style="background:linear-gradient(135deg,rgba(255,107,53,0.08),rgba(124,58,237,0.06));padding:1.25rem 1.25rem 0.75rem;border-bottom:1px solid var(--border);">
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div style="font-size:1.3rem;width:36px;height:36px;background:var(--surface2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">⚡</div>
+                  <div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;line-height:1.3;" class="lang-es">Modos de Conexión: Import vs DirectQuery vs DirectLake</div>
+                    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.95rem;line-height:1.3;" class="lang-en">Connection Modes: Import vs DirectQuery vs DirectLake</div>
+                    <div style="font-size:0.75rem;color:var(--accent);font-weight:500;margin-top:2px;">Import · DirectQuery · DirectLake · Live Connection</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- COMPARISON TABLE -->
+              <div style="padding:1.25rem;overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:0.8rem;">
+                  <thead>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <th style="text-align:left;padding:8px 10px;color:var(--text-muted);font-weight:600;font-size:0.7rem;text-transform:uppercase;letter-spacing:0.06em;"></th>
+                      <th style="text-align:center;padding:8px 10px;color:var(--accent);font-weight:700;font-size:0.78rem;">Import</th>
+                      <th style="text-align:center;padding:8px 10px;color:var(--accent3);font-weight:700;font-size:0.78rem;">DirectQuery</th>
+                      <th style="text-align:center;padding:8px 10px;color:var(--warning);font-weight:700;font-size:0.78rem;">DirectLake</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">¿Dónde viven los datos?</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Where does data live?</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--text-dim);"><span class="lang-es-inline">Copia en modelo</span><span class="lang-en-inline">Model copy</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--text-dim);"><span class="lang-es-inline">En la fuente</span><span class="lang-en-inline">At source</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--text-dim);">OneLake (Fabric)</td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">Velocidad de consulta</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Query speed</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">🟢 <span class="lang-es-inline">Rápido</span><span class="lang-en-inline">Fast</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--warning);">🟡 <span class="lang-es-inline">Lento</span><span class="lang-en-inline">Slow</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">🟢 <span class="lang-es-inline">Muy rápido</span><span class="lang-en-inline">Very fast</span></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">Datos en tiempo real</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Real-time data</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--danger);">❌ No</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sí</span><span class="lang-en-inline">Yes</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sí</span><span class="lang-en-inline">Yes</span></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">Límite de datos</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Data limit</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--warning);">⚠ 1GB compressed</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sin límite</span><span class="lang-en-inline">No limit</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sin límite</span><span class="lang-en-inline">No limit</span></td>
+                    </tr>
+                    <tr style="border-bottom:1px solid var(--border);">
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">DAX completo</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Full DAX support</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sí</span><span class="lang-en-inline">Yes</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--warning);">⚠ <span class="lang-es-inline">Limitado</span><span class="lang-en-inline">Limited</span></td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--success);">✅ <span class="lang-es-inline">Sí</span><span class="lang-en-inline">Yes</span></td>
+                    </tr>
+                    <tr>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-es">Requiere</td>
+                      <td style="padding:8px 10px;color:var(--text-muted);font-weight:500;" class="lang-en">Requires</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--text-dim);">Power BI Desktop</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--text-dim);">Power BI Desktop</td>
+                      <td style="text-align:center;padding:8px 10px;color:var(--warning);">Microsoft Fabric</td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:1rem;">
+                  <div style="background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:8px;padding:10px;">
+                    <div style="font-size:0.72rem;font-weight:700;color:var(--accent);margin-bottom:4px;">Import — <span class="lang-es-inline">Úsalo cuando:</span><span class="lang-en-inline">Use it when:</span></div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);"><span class="lang-es-inline">Dataset &lt;1GB · No necesitas real-time · Máxima velocidad · Empiezas con Power BI</span><span class="lang-en-inline">Dataset &lt;1GB · No real-time needed · Maximum speed · Starting with Power BI</span></div>
+                  </div>
+                  <div style="background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:8px;padding:10px;">
+                    <div style="font-size:0.72rem;font-weight:700;color:var(--accent3);margin-bottom:4px;">DirectQuery — <span class="lang-es-inline">Úsalo cuando:</span><span class="lang-en-inline">Use it when:</span></div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" class="lang-es">Datos cambian constantemente · Dataset muy grande · Datos sensibles que no pueden copiarse</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" class="lang-en">Data changes constantly · Very large dataset · Sensitive data that can't be copied</div>
+                  </div>
+                  <div style="background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.2);border-radius:8px;padding:10px;">
+                    <div style="font-size:0.72rem;font-weight:700;color:var(--warning);margin-bottom:4px;">DirectLake — <span class="lang-es-inline">Úsalo cuando:</span><span class="lang-en-inline">Use it when:</span></div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" class="lang-es">Tienes Microsoft Fabric · Datos en OneLake · Necesitas velocidad Import + datos frescos</div>
+                    <div style="font-size:0.75rem;color:var(--text-muted);" class="lang-en">You have Microsoft Fabric · Data in OneLake · Need Import speed + fresh data</div>
+                  </div>
+                </div>
+
+                <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.15);border-radius:8px;padding:10px;margin-top:10px;">
+                  <div style="font-size:0.72rem;font-weight:700;color:var(--danger);margin-bottom:3px;">
+                    <span class="lang-es-inline">⚡ Pregunta frecuente en el examen PL-300:</span>
+                    <span class="lang-en-inline">⚡ Frequent PL-300 exam question:</span>
+                  </div>
+                  <div style="font-size:0.8rem;color:var(--text-dim);" class="lang-es">"Un cliente tiene 50GB de datos de ventas que cambian cada 5 minutos. ¿Qué modo de conexión recomiendas?" → <strong style="color:var(--text)">DirectQuery</strong> (tiempo real + sin límite de tamaño) o <strong style="color:var(--text)">DirectLake</strong> si usan Fabric.</div>
+                  <div style="font-size:0.8rem;color:var(--text-dim);" class="lang-en">"A client has 50GB of sales data that changes every 5 minutes. What connection mode do you recommend?" → <strong style="color:var(--text)">DirectQuery</strong> (real-time + no size limit) or <strong style="color:var(--text)">DirectLake</strong> if they use Fabric.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        <!-- SECTION 2: Transform & Load — Missing Topics -->
+        <div style="margin-top:2rem;">
+          <div style="font-size:0.7rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.75rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);">
+            <span class="lang-es-inline">🔧 Transformar y Cargar Datos — Power Query</span>
+            <span class="lang-en-inline">🔧 Transform and Load Data — Power Query</span>
+          </div>
+
+          <div class="concept-grid">
+
+            <!-- PIVOT / UNPIVOT / TRANSPOSE -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">🔄</div>
+                <div>
+                  <div class="concept-card-title lang-es">Pivot, Unpivot y Transpose</div>
+                  <div class="concept-card-title lang-en">Pivot, Unpivot and Transpose</div>
+                  <div class="concept-card-en">Reshape · Wide to Long · Long to Wide</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                <span class="highlight">Pivot</span>: convierte filas únicas en columnas (Long → Wide). Ejemplo: meses como filas → meses como columnas.<br><br>
+                <span class="highlight">Unpivot</span>: lo opuesto — columnas a filas (Wide → Long). Esencial para normalizar datos de Excel mal estructurados.<br><br>
+                <span class="highlight">Transpose</span>: intercambia filas por columnas completamente.<br><br>
+                <em>Regla PL-300:</em> Si recibes un Excel con columnas "Enero, Febrero, Marzo..." como headers, necesitas <strong>Unpivot</strong> para crear una columna "Mes" y una columna "Valor" — formato correcto para DAX.
+              </div>
+              <div class="concept-card-body lang-en">
+                <span class="highlight">Pivot</span>: converts unique rows into columns (Long → Wide). Example: months as rows → months as columns.<br><br>
+                <span class="highlight">Unpivot</span>: the opposite — columns to rows (Wide → Long). Essential for normalizing poorly structured Excel data.<br><br>
+                <span class="highlight">Transpose</span>: swaps rows and columns completely.<br><br>
+                <em>PL-300 rule:</em> If you receive an Excel with "January, February, March..." as column headers, you need <strong>Unpivot</strong> to create a "Month" column and a "Value" column — correct format for DAX.
+              </div>
+              <!-- Power BI Visual Reference -->
+              <div style="margin-top:0.75rem;background:var(--surface2);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">📍 En Power BI Desktop</span>
+                  <span class="lang-en-inline">📍 In Power BI Desktop</span>
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-es">Home → Transform Data → Power Query Editor → selecciona columnas → Transform tab → <strong style="color:var(--text)">Unpivot Columns</strong> o <strong style="color:var(--text)">Pivot Column</strong></div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-en">Home → Transform Data → Power Query Editor → select columns → Transform tab → <strong style="color:var(--text)">Unpivot Columns</strong> or <strong style="color:var(--text)">Pivot Column</strong></div>
+              </div>
+            </div>
+
+            <!-- GROUP & AGGREGATE -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">📊</div>
+                <div>
+                  <div class="concept-card-title lang-es">Group By — Agrupar y Agregar</div>
+                  <div class="concept-card-title lang-en">Group By — Group and Aggregate</div>
+                  <div class="concept-card-en">SUM · COUNT · AVG · MIN · MAX</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                <span class="highlight">Group By</span> en Power Query agrupa filas por una o más columnas y aplica una función de agregación.<br><br>
+                Ejemplo: tabla de 50,000 transacciones → Group By Product, SUM(Sales) → tabla de 200 productos con total de ventas.<br><br>
+                <em>Diferencia clave con DAX:</em> Group By ocurre en la capa de transformación (antes del modelo). Las medidas DAX agregan en el momento de la consulta. Usar Group By reduce el tamaño del modelo — mejora performance.<br><br>
+                <em style="color:var(--accent2)">Pregunta examen:</em> "¿Cuándo usarías Group By en Power Query en lugar de una medida DAX?" → Cuando necesitas reducir granularidad permanentemente antes de cargar.
+              </div>
+              <div class="concept-card-body lang-en">
+                <span class="highlight">Group By</span> in Power Query groups rows by one or more columns and applies an aggregation function.<br><br>
+                Example: table of 50,000 transactions → Group By Product, SUM(Sales) → table of 200 products with total sales.<br><br>
+                <em>Key difference from DAX:</em> Group By happens in the transform layer (before the model). DAX measures aggregate at query time. Using Group By reduces model size — improves performance.<br><br>
+                <em style="color:var(--accent2)">Exam question:</em> "When would you use Group By in Power Query instead of a DAX measure?" → When you need to permanently reduce granularity before loading.
+              </div>
+              <div style="margin-top:0.75rem;background:var(--surface2);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">📍 En Power BI Desktop</span>
+                  <span class="lang-en-inline">📍 In Power BI Desktop</span>
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-es">Power Query Editor → Transform tab → <strong style="color:var(--text)">Group By</strong> → selecciona columna(s) de agrupación → selecciona operación (Sum, Count, Average…)</div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-en">Power Query Editor → Transform tab → <strong style="color:var(--text)">Group By</strong> → select grouping column(s) → select operation (Sum, Count, Average…)</div>
+              </div>
+            </div>
+
+            <!-- REFERENCE vs DUPLICATE QUERIES -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">🔀</div>
+                <div>
+                  <div class="concept-card-title lang-es">Reference vs Duplicate Query</div>
+                  <div class="concept-card-title lang-en">Reference vs Duplicate Query</div>
+                  <div class="concept-card-en">Linked · Independent · Performance</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                <span class="highlight">Duplicate</span>: crea una copia independiente de la query. Cambios en el original no afectan la copia. Doble procesamiento = más lento.<br><br>
+                <span class="highlight">Reference</span>: crea una query que depende del resultado de otra. Si la original cambia, la referenciada también cambia. Un solo procesamiento = más eficiente.<br><br>
+                <em style="color:var(--accent2)">Caso de uso real:</em> Tienes una query base "Sales_Raw". Creas References para "Sales_Retail" y "Sales_Wholesale" con diferentes filtros. La limpieza ocurre una sola vez en Sales_Raw — no tres veces.<br><br>
+                <em>Regla PL-300:</em> Usa Reference cuando las queries comparten transformaciones base. Usa Duplicate solo cuando necesitas una rama completamente independiente.
+              </div>
+              <div class="concept-card-body lang-en">
+                <span class="highlight">Duplicate</span>: creates an independent copy of the query. Changes to the original don't affect the copy. Double processing = slower.<br><br>
+                <span class="highlight">Reference</span>: creates a query that depends on another query's result. If the original changes, the referenced one changes too. Single processing = more efficient.<br><br>
+                <em style="color:var(--accent2)">Real use case:</em> You have a base query "Sales_Raw". Create References for "Sales_Retail" and "Sales_Wholesale" with different filters. Cleaning happens once in Sales_Raw — not three times.<br><br>
+                <em>PL-300 rule:</em> Use Reference when queries share base transformations. Use Duplicate only when you need a completely independent branch.
+              </div>
+            </div>
+
+            <!-- PARAMETERS -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">⚙️</div>
+                <div>
+                  <div class="concept-card-title lang-es">Parámetros en Power Query</div>
+                  <div class="concept-card-title lang-en">Parameters in Power Query</div>
+                  <div class="concept-card-en">Dynamic · Reusable · Configurable</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                Un <span class="highlight">parámetro</span> es un valor configurable que puedes usar en múltiples lugares de tus queries — como una variable reutilizable.<br><br>
+                <em>Casos de uso:</em><br>
+                • <strong>Server Name</strong>: cambiar entre servidor de desarrollo y producción sin editar cada query<br>
+                • <strong>Date Range</strong>: filtrar datos por un rango de fechas configurable<br>
+                • <strong>File Path</strong>: cambiar la ruta del archivo fuente sin tocar el código<br><br>
+                <em style="color:var(--accent2)">Examen PL-300:</em> Pregunta sobre parámetros en el contexto de hacer modelos dinámicos y portables entre ambientes (dev/prod).
+              </div>
+              <div class="concept-card-body lang-en">
+                A <span class="highlight">parameter</span> is a configurable value you can use across multiple queries — like a reusable variable.<br><br>
+                <em>Use cases:</em><br>
+                • <strong>Server Name</strong>: switch between dev and prod server without editing each query<br>
+                • <strong>Date Range</strong>: filter data by a configurable date range<br>
+                • <strong>File Path</strong>: change the source file path without touching code<br><br>
+                <em style="color:var(--accent2)">PL-300 exam:</em> Questions about parameters focus on making models dynamic and portable between environments (dev/prod).
+              </div>
+              <div style="margin-top:0.75rem;background:var(--surface2);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">📍 En Power BI Desktop</span>
+                  <span class="lang-en-inline">📍 In Power BI Desktop</span>
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-es">Power Query Editor → Home → <strong style="color:var(--text)">Manage Parameters</strong> → New Parameter → define Name, Type, y Current Value</div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-en">Power Query Editor → Home → <strong style="color:var(--text)">Manage Parameters</strong> → New Parameter → define Name, Type, and Current Value</div>
+              </div>
+            </div>
+
+            <!-- CREDENTIALS & PRIVACY LEVELS -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">🔐</div>
+                <div>
+                  <div class="concept-card-title lang-es">Credenciales y Niveles de Privacidad</div>
+                  <div class="concept-card-title lang-en">Credentials and Privacy Levels</div>
+                  <div class="concept-card-en">None · Public · Organizational · Private</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                <span class="highlight">Credenciales</span>: definen cómo Power BI se autentica con una fuente de datos (usuario/contraseña, OAuth, clave API, Windows auth).<br><br>
+                <span class="highlight">Niveles de privacidad</span> controlan si los datos de una fuente pueden combinarse con datos de otra:<br>
+                • <strong>None</strong>: sin restricciones (solo desarrollo local)<br>
+                • <strong>Public</strong>: datos públicos, pueden combinarse libremente<br>
+                • <strong>Organizational</strong>: solo se combinan con fuentes del mismo nivel o inferior<br>
+                • <strong>Private</strong>: aislado — nunca se combina con otras fuentes<br><br>
+                <em style="color:var(--danger)">Error común:</em> Si ves "Formula.Firewall" error al combinar fuentes, el problema son los niveles de privacidad incompatibles.
+              </div>
+              <div class="concept-card-body lang-en">
+                <span class="highlight">Credentials</span>: define how Power BI authenticates with a data source (username/password, OAuth, API key, Windows auth).<br><br>
+                <span class="highlight">Privacy levels</span> control whether data from one source can be combined with data from another:<br>
+                • <strong>None</strong>: no restrictions (local development only)<br>
+                • <strong>Public</strong>: public data, can be combined freely<br>
+                • <strong>Organizational</strong>: only combines with same or lower level sources<br>
+                • <strong>Private</strong>: isolated — never combines with other sources<br><br>
+                <em style="color:var(--danger)">Common error:</em> If you see a "Formula.Firewall" error when combining sources, the issue is incompatible privacy levels.
+              </div>
+            </div>
+
+            <!-- SEMI-STRUCTURED DATA -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">📋</div>
+                <div>
+                  <div class="concept-card-title lang-es">Datos Semi-estructurados</div>
+                  <div class="concept-card-title lang-en">Semi-structured Data</div>
+                  <div class="concept-card-en">JSON · XML · API · Nested</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                Los datos semi-estructurados (JSON, XML) tienen estructura pero no siguen el formato tabular fijo de un Excel o SQL. Power Query puede convertirlos en tablas.<br><br>
+                <em>JSON típico de una API:</em><br>
+                <code style="background:var(--surface2);padding:3px 6px;border-radius:4px;font-size:0.72rem;display:block;margin:4px 0">{"orders":[{"id":1,"amount":450,"region":"North"},...]}</code><br>
+                Power Query expande el array → crea columnas id, amount, region.<br><br>
+                <em style="color:var(--accent2)">Operaciones clave:</em> <strong>Expand Column</strong> (anida → columnas), <strong>Extract Values</strong> (lista → texto), <strong>Parse JSON/XML</strong>.<br><br>
+                <em>→ Módulo 4 cubre</em> APIs y fuentes web en profundidad.
+              </div>
+              <div class="concept-card-body lang-en">
+                Semi-structured data (JSON, XML) has structure but doesn't follow the fixed tabular format of Excel or SQL. Power Query can convert it into tables.<br><br>
+                <em>Typical API JSON:</em><br>
+                <code style="background:var(--surface2);padding:3px 6px;border-radius:4px;font-size:0.72rem;display:block;margin:4px 0">{"orders":[{"id":1,"amount":450,"region":"North"},...]}</code><br>
+                Power Query expands the array → creates columns id, amount, region.<br><br>
+                <em style="color:var(--accent2)">Key operations:</em> <strong>Expand Column</strong> (nested → columns), <strong>Extract Values</strong> (list → text), <strong>Parse JSON/XML</strong>.<br><br>
+                <em>→ Module 4 covers</em> APIs and web sources in depth.
+              </div>
+            </div>
+
+            <!-- CONFIGURE DATA LOADING -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">⚡</div>
+                <div>
+                  <div class="concept-card-title lang-es">Configurar Carga de Datos</div>
+                  <div class="concept-card-title lang-en">Configure Data Loading</div>
+                  <div class="concept-card-en">Enable Load · Report Connection Only · Staging</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                No todas las queries deben cargarse al modelo de datos. Power Query permite tres comportamientos:<br><br>
+                • <strong>Enable Load</strong>: la query se carga al modelo (tabla visible en Power BI)<br>
+                • <strong>Disable Load</strong>: la query existe pero no genera tabla — se usa como staging o paso intermedio<br>
+                • <strong>Include in Report Refresh</strong>: controla si la query se actualiza en cada refresh<br><br>
+                <em style="color:var(--accent2)">Patrón recomendado:</em> Queries de staging (limpieza base) con <strong>Disable Load</strong>. Solo las tablas finales con Enable Load. Resultado: modelo más limpio y rápido.<br><br>
+                <em style="color:var(--danger)">Error común PL-300:</em> Cargar todas las queries intermedias al modelo — genera tablas innecesarias que confunden al usuario final.
+              </div>
+              <div class="concept-card-body lang-en">
+                Not all queries need to be loaded into the data model. Power Query allows three behaviors:<br><br>
+                • <strong>Enable Load</strong>: the query loads into the model (visible table in Power BI)<br>
+                • <strong>Disable Load</strong>: the query exists but generates no table — used as staging or intermediate step<br>
+                • <strong>Include in Report Refresh</strong>: controls whether the query updates on each refresh<br><br>
+                <em style="color:var(--accent2)">Recommended pattern:</em> Staging queries (base cleaning) with <strong>Disable Load</strong>. Only final tables with Enable Load. Result: cleaner, faster model.<br><br>
+                <em style="color:var(--danger)">Common PL-300 error:</em> Loading all intermediate queries into the model — creates unnecessary tables that confuse the end user.
+              </div>
+              <div style="margin-top:0.75rem;background:var(--surface2);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">📍 En Power BI Desktop</span>
+                  <span class="lang-en-inline">📍 In Power BI Desktop</span>
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-es">Power Query Editor → clic derecho sobre la query en el panel izquierdo → <strong style="color:var(--text)">Enable Load</strong> (toggle on/off)</div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-en">Power Query Editor → right-click on the query in the left panel → <strong style="color:var(--text)">Enable Load</strong> (toggle on/off)</div>
+              </div>
+            </div>
+
+            <!-- RESOLVE IMPORT ERRORS -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">🚨</div>
+                <div>
+                  <div class="concept-card-title lang-es">Resolver Errores de Importación</div>
+                  <div class="concept-card-title lang-en">Resolve Data Import Errors</div>
+                  <div class="concept-card-en">Error · null · Remove Errors · Replace</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                Los errores de importación ocurren cuando Power Query no puede procesar un valor. Aparecen como <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:0.72rem">Error</code> en la celda.<br><br>
+                <strong>Causas más comunes:</strong><br>
+                • Conversión de tipo fallida (texto "N/A" en columna numérica)<br>
+                • Caracteres especiales en fuentes CSV<br>
+                • Fórmulas rotas en Excel origen<br>
+                • Columnas renombradas en la fuente que rompen Applied Steps<br><br>
+                <strong>Soluciones en Power Query:</strong><br>
+                • <strong>Remove Errors</strong>: elimina filas con error<br>
+                • <strong>Replace Errors</strong>: reemplaza el error con un valor (ej: 0 o null)<br>
+                • <strong>Keep Errors</strong>: conserva solo las filas con error (para auditarlas)<br><br>
+                <em style="color:var(--accent2)">Regla de negocio:</em> Nunca elimines errores sin entender por qué ocurren. Un error sistemático indica un problema en la fuente.
+              </div>
+              <div class="concept-card-body lang-en">
+                Import errors occur when Power Query cannot process a value. They appear as <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:0.72rem">Error</code> in the cell.<br><br>
+                <strong>Most common causes:</strong><br>
+                • Failed type conversion (text "N/A" in numeric column)<br>
+                • Special characters in CSV sources<br>
+                • Broken formulas in source Excel<br>
+                • Renamed columns in source that break Applied Steps<br><br>
+                <strong>Power Query solutions:</strong><br>
+                • <strong>Remove Errors</strong>: delete rows with errors<br>
+                • <strong>Replace Errors</strong>: replace the error with a value (e.g. 0 or null)<br>
+                • <strong>Keep Errors</strong>: keep only error rows (to audit them)<br><br>
+                <em style="color:var(--accent2)">Business rule:</em> Never remove errors without understanding why they occur. A systematic error indicates a source problem.
+              </div>
+            </div>
+
+            <!-- CREATE & TRANSFORM COLUMNS -->
+            <div class="concept-card">
+              <div class="concept-card-header">
+                <div class="concept-icon">➕</div>
+                <div>
+                  <div class="concept-card-title lang-es">Crear y Transformar Columnas</div>
+                  <div class="concept-card-title lang-en">Create and Transform Columns</div>
+                  <div class="concept-card-en">Custom Column · Conditional · Split · Extract</div>
+                </div>
+              </div>
+              <div class="concept-card-body lang-es">
+                Power Query permite crear columnas nuevas o transformar las existentes sin escribir código complejo:<br><br>
+                • <strong>Custom Column</strong>: columna calculada con fórmula M. Ejemplo: <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:0.72rem">[Price] * [Quantity]</code><br>
+                • <strong>Conditional Column</strong>: lógica if/then/else visual. Ejemplo: si Region = "North" entonces "Zone A" sino "Zone B"<br>
+                • <strong>Split Column</strong>: divide texto por delimitador. Ejemplo: "New York, USA" → columna City + columna Country<br>
+                • <strong>Extract</strong>: extrae parte de texto (primeros N caracteres, texto antes de delimitador)<br><br>
+                <em>Diferencia con DAX:</em> Columnas creadas en Power Query son físicas y estáticas. Columnas calculadas en DAX se recalculan en memoria. → Módulo 3 cubre columnas calculadas DAX.
+              </div>
+              <div class="concept-card-body lang-en">
+                Power Query lets you create new columns or transform existing ones without complex code:<br><br>
+                • <strong>Custom Column</strong>: calculated column with M formula. Example: <code style="background:var(--surface2);padding:2px 5px;border-radius:3px;font-size:0.72rem">[Price] * [Quantity]</code><br>
+                • <strong>Conditional Column</strong>: visual if/then/else logic. Example: if Region = "North" then "Zone A" else "Zone B"<br>
+                • <strong>Split Column</strong>: splits text by delimiter. Example: "New York, USA" → City column + Country column<br>
+                • <strong>Extract</strong>: extracts part of text (first N chars, text before delimiter)<br><br>
+                <em>Difference from DAX:</em> Columns created in Power Query are physical and static. DAX calculated columns recalculate in memory. → Module 3 covers DAX calculated columns.
+              </div>
+              <div style="margin-top:0.75rem;background:var(--surface2);border:1px solid rgba(0,212,255,0.15);border-radius:8px;padding:10px;">
+                <div style="font-size:0.68rem;font-weight:700;color:var(--accent);margin-bottom:6px;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">📍 En Power BI Desktop</span>
+                  <span class="lang-en-inline">📍 In Power BI Desktop</span>
+                </div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-es">Power Query Editor → <strong style="color:var(--text)">Add Column tab</strong> → Custom Column / Conditional Column / Column From Examples</div>
+                <div style="font-size:0.75rem;color:var(--text-dim);" class="lang-en">Power Query Editor → <strong style="color:var(--text)">Add Column tab</strong> → Custom Column / Conditional Column / Column From Examples</div>
+              </div>
+            </div>
+
+          </div><!-- /concept-grid -->
+
+          <!-- FORWARD REFERENCES — Topics that belong in Module 2 -->
+          <div style="margin-top:1.5rem;background:rgba(124,58,237,0.06);border:1px solid rgba(124,58,237,0.2);border-radius:12px;padding:1.25rem;">
+            <div style="font-size:0.72rem;font-weight:700;color:var(--accent3);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.75rem;">
+              <span class="lang-es-inline">🔗 Temas relacionados — Se cubren en otros módulos</span>
+              <span class="lang-en-inline">🔗 Related topics — Covered in other modules</span>
+            </div>
+            <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;">
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--accent3);margin-bottom:3px;">
+                  <span class="lang-es-inline">Crear tablas Fact y Dimension</span>
+                  <span class="lang-en-inline">Create Fact and Dimension tables</span>
+                </div>
+                <div style="font-size:0.73rem;color:var(--text-muted);">
+                  <span class="lang-es-inline">→ Cubierto completamente en <strong style="color:var(--text)">Módulo 2 — Modelar Datos</strong> (Star Schema, Kimball)</span>
+                  <span class="lang-en-inline">→ Fully covered in <strong style="color:var(--text)">Module 2 — Model Data</strong> (Star Schema, Kimball)</span>
+                </div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--accent3);margin-bottom:3px;">
+                  <span class="lang-es-inline">Identificar claves para relaciones</span>
+                  <span class="lang-en-inline">Identify keys for relationships</span>
+                </div>
+                <div style="font-size:0.73rem;color:var(--text-muted);">
+                  <span class="lang-es-inline">→ Cubierto en <strong style="color:var(--text)">Módulo 2</strong> — Primary Keys, Foreign Keys, cardinalidad</span>
+                  <span class="lang-en-inline">→ Covered in <strong style="color:var(--text)">Module 2</strong> — Primary Keys, Foreign Keys, cardinality</span>
+                </div>
+              </div>
+              <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--accent3);margin-bottom:3px;">
+                  <span class="lang-es-inline">Columnas calculadas vs Medidas DAX</span>
+                  <span class="lang-en-inline">Calculated Columns vs DAX Measures</span>
+                </div>
+                <div style="font-size:0.73rem;color:var(--text-muted);">
+                  <span class="lang-es-inline">→ Cubierto en <strong style="color:var(--text)">Módulo 3 — DAX Core</strong></span>
+                  <span class="lang-en-inline">→ Covered in <strong style="color:var(--text)">Module 3 — DAX Core</strong></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /section 2 -->
+
+        </div>
+      </div>
+
+      <!-- TAB: DASHBOARD -->
+      <div id="tab-dashboard-m1" class="tab-content">
+
+        <!-- STORYTELLING LAYER -->
+        <div class="story-panel">
+          <div class="story-panel-header">
+            <div class="story-tag">
+              <span class="lang-es-inline">Cómo leer este dashboard</span>
+              <span class="lang-en-inline">How to read this dashboard</span>
+            </div>
+          </div>
+          <div class="story-steps">
+            <div class="story-step">
+              <div class="story-step-num">1</div>
+              <div class="story-step-text lang-es"><strong>Empieza por los KPIs arriba.</strong> Son el resumen ejecutivo. Si algo está en rojo, ya sabes que hay un problema — los detalles están abajo.</div>
+              <div class="story-step-text lang-en"><strong>Start with the KPIs at the top.</strong> They're the executive summary. If something is red, you already know there's a problem — details are below.</div>
+            </div>
+            <div class="story-step">
+              <div class="story-step-num">2</div>
+              <div class="story-step-text lang-es"><strong>Lee la gráfica de barras (izquierda).</strong> Te dice qué tipo de error es más frecuente. La barra más larga es tu prioridad — ahí está el mayor impacto.</div>
+              <div class="story-step-text lang-en"><strong>Read the bar chart (left).</strong> It tells you which error type is most frequent. The longest bar is your priority — that's where the highest impact is.</div>
+            </div>
+            <div class="story-step">
+              <div class="story-step-num">3</div>
+              <div class="story-step-text lang-es"><strong>Lee la gráfica de dona (derecha).</strong> Muestra la proporción de registros válidos vs problemáticos. Si el rojo supera el 15%, la fuente de datos tiene un problema sistémico.</div>
+              <div class="story-step-text lang-en"><strong>Read the donut chart (right).</strong> It shows the proportion of valid vs problematic records. If red exceeds 15%, the data source has a systemic problem.</div>
+            </div>
+            <div class="story-step">
+              <div class="story-step-num">4</div>
+              <div class="story-step-text lang-es"><strong>La narrativa ejecutiva:</strong> "De 1,240 registros recibidos, el 11.5% tienen problemas de calidad. Los valores nulos en Amount representan $47K en cobros no procesables. Acción requerida antes de cargar al modelo."</div>
+              <div class="story-step-text lang-en"><strong>Executive narrative:</strong> "Of 1,240 records received, 11.5% have quality issues. Null values in Amount represent $47K in unprocessable charges. Action required before loading to model."</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- REAL DASHBOARD -->
+        <div class="dashboard-wrapper">
+          <div class="dashboard-header">
+            <div class="dashboard-title-block">
+              <div class="dashboard-title lang-es">Auditoría de Calidad de Datos — Órdenes de Compra</div>
+              <div class="dashboard-title lang-en" style="display:none">Data Quality Audit — Purchase Orders</div>
+              <div class="dashboard-title lang-en">Data Quality Audit — Purchase Orders</div>
+              <div class="dashboard-subtitle lang-es">Power Query · Módulo 1 · Preparar datos</div>
+              <div class="dashboard-subtitle lang-en">Power Query · Module 1 · Prepare Data</div>
+              <div class="dashboard-subtitle lang-en">Power Query · Module 1 · Prepare data</div>
+            </div>
+            <div class="dashboard-controls">
+              <button class="dash-btn active" onclick="filterDash('all',this)">All</button>
+              <button class="dash-btn" onclick="filterDash('nulls',this)">Nulls</button>
+              <button class="dash-btn" onclick="filterDash('dupes',this)">Dupes</button>
+              <button class="dash-btn" onclick="filterDash('types',this)">Type Errors</button>
+            </div>
+          </div>
+
+          <div class="kpi-row" id="dashKpiRow">
+            <div class="kpi-card" data-type="all">
+              <div class="kpi-label lang-es">Total Registros</div>
+              <div class="kpi-label lang-en">Total Records</div>
+              <div class="kpi-value" style="color:var(--text)">1,240</div>
+              <div class="kpi-delta up">↑ +87 vs last month</div>
+            </div>
+            <div class="kpi-card" data-type="all">
+              <div class="kpi-label lang-es">Registros Válidos</div>
+              <div class="kpi-label lang-en">Valid Records</div>
+              <div class="kpi-value" style="color:var(--success)">1,098</div>
+              <div class="kpi-delta up">✓ 88.5% clean</div>
+            </div>
+            <div class="kpi-card" data-type="nulls dupes types">
+              <div class="kpi-label lang-es">Con Errores</div>
+              <div class="kpi-label lang-en">With Errors</div>
+              <div class="kpi-value" style="color:var(--danger)">142</div>
+              <div class="kpi-delta down">⚠ 11.5% require fix</div>
+            </div>
+            <div class="kpi-card" data-type="nulls dupes types">
+              <div class="kpi-label lang-es">Impacto $</div>
+              <div class="kpi-label lang-en">$ Impact</div>
+              <div class="kpi-value" style="color:var(--warning)">$47K</div>
+              <div class="kpi-delta warn">⚡ unprocessable</div>
+            </div>
+          </div>
+
+          <div class="charts-grid">
+            <div class="chart-panel" id="panelErrorType">
+              <div class="chart-panel-title">
+                <span class="lang-es-inline">Errores por Tipo de Problema</span>
+                <span class="lang-en-inline">Errors by Problem Type</span>
+              </div>
+              <div class="chart-container" style="height:200px">
+                <canvas id="errorTypeChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-panel" id="panelQuality">
+              <div class="chart-panel-title">
+                <span class="lang-es-inline">Distribución de Calidad</span>
+                <span class="lang-en-inline">Quality Distribution</span>
+              </div>
+              <div class="chart-container" style="height:200px">
+                <canvas id="qualityDonut"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <div class="charts-grid" style="border-top:1px solid var(--border)">
+            <div class="chart-panel" id="panelTrend">
+              <div class="chart-panel-title">
+                <span class="lang-es-inline">Errores por Semana (tendencia)</span>
+                <span class="lang-en-inline">Errors by Week (trend)</span>
+              </div>
+              <div class="chart-container" style="height:160px">
+                <canvas id="trendChart"></canvas>
+              </div>
+            </div>
+            <div class="chart-panel" id="panelSource">
+              <div class="chart-panel-title">
+                <span class="lang-es-inline">Errores por Fuente de Datos</span>
+                <span class="lang-en-inline">Errors by Data Source</span>
+              </div>
+              <div class="chart-container" style="height:160px">
+                <canvas id="sourceChart"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: CHALLENGE -->
+      <div id="tab-challenge-m1" class="tab-content">
+
+        <div class="challenge-panel">
+          <div class="challenge-header">
+            <div>
+              <div class="challenge-title">⚠️
+                <span class="lang-es-inline">Modo Reto — Encuentra los Errores</span>
+                <span class="lang-en-inline">Challenge Mode — Find the Errors</span>
+              </div>
+              <div class="challenge-desc lang-es">Este dashboard contiene 4 errores deliberados de diseño y datos. Haz clic en el elemento que crees que está mal.</div>
+              <div class="challenge-desc lang-en">This dashboard contains 4 deliberate design and data errors. Click on the element you think is wrong.</div>
+              <div class="challenge-desc lang-en">This dashboard contains 4 deliberate design and data errors. Click on the element you think is wrong.</div>
+            </div>
+            <div class="errors-found" id="errorsFoundDisplay">
+              <span class="lang-es-inline">Encontrados:</span>
+              <span class="lang-en-inline">Found:</span>
+              <span id="errCount">0</span>/4
+            </div>
+          </div>
+
+          <div class="challenge-body">
+
+            <div class="hint-area">
+              <button class="btn-danger" onclick="showHint()">
+                <span class="lang-es-inline">💡 Pista</span>
+                <span class="lang-en-inline">💡 Hint</span>
+              </button>
+              <button class="btn-secondary" onclick="showSolution()">
+                <span class="lang-es-inline">👁 Ver solución</span>
+                <span class="lang-en-inline">👁 Show solution</span>
+              </button>
+              <button class="btn-secondary" onclick="resetChallenge()">
+                <span class="lang-es-inline">↺ Reiniciar</span>
+                <span class="lang-en-inline">↺ Reset</span>
+              </button>
+            </div>
+
+            <div id="hintBox" class="hint-box">
+              💡 <span class="lang-es-inline">Revisa: (1) los KPIs — ¿los números suman correctamente?, (2) el tipo de gráfica — ¿es la correcta para este tipo de dato?, (3) los colores — ¿comunican lo que deben?, (4) los títulos — ¿son precisos?</span>
+              <span class="lang-en-inline">Check: (1) KPIs — do the numbers add up correctly?, (2) chart type — is it right for this data?, (3) colors — do they communicate what they should?, (4) titles — are they accurate?</span>
+            </div>
+
+            <!-- ERROR DASHBOARD -->
+            <div class="error-dashboard">
+              <div class="error-kpi-row">
+                <div class="error-kpi clickable-error" id="ekpi1" onclick="clickError('ekpi1',false)">
+                  <div class="error-kpi-label lang-es">Total Registros</div>
+                  <div class="error-kpi-label lang-en">Total Records</div>
+                  <div class="error-kpi-val" style="color:var(--text)">1,240</div>
+                  <div class="error-kpi-delta">Purchase orders</div>
+                </div>
+                <div class="error-kpi clickable-error" id="ekpi2" onclick="clickError('ekpi2',true,'err1')">
+                  <div class="error-kpi-label"><span class="lang-es-inline">Registros Válidos</span><span class="lang-en-inline">Valid Records</span></div>
+                  <div class="error-kpi-val" style="color:var(--danger)">1,098</div>
+                  <div class="error-kpi-delta lang-es">↑ 88.5% limpio</div>
+                  <div class="error-kpi-delta lang-en">↑ 88.5% clean</div>
+                </div>
+                <div class="error-kpi clickable-error" id="ekpi3" onclick="clickError('ekpi3',true,'err2')">
+                  <div class="error-kpi-label lang-es">Con Errores</div>
+                  <div class="error-kpi-label lang-en">With Errors</div>
+                  <div class="error-kpi-val" style="color:var(--success)">142</div>
+                  <div class="error-kpi-delta lang-es">11.5% requieren fix</div>
+                  <div class="error-kpi-delta lang-en">11.5% require fix</div>
+                </div>
+                <div class="error-kpi clickable-error" id="ekpi4" onclick="clickError('ekpi4',false)">
+                  <div class="error-kpi-label lang-es">Impacto $</div>
+                  <div class="error-kpi-label lang-en">$ Impact</div>
+                  <div class="error-kpi-val" style="color:var(--warning)">$47K</div>
+                  <div class="error-kpi-delta">Unprocessable</div>
+                </div>
+              </div>
+
+              <div class="error-charts-row">
+                <div class="error-chart-panel clickable-error" id="echart1" onclick="clickError('echart1',false)">
+                  <div class="error-chart-label lang-es">Errores por Tipo</div>
+                  <div class="error-chart-label lang-en">Errors by Type</div>
+                  <canvas id="challengeBar"></canvas>
+                </div>
+                <div class="error-chart-panel clickable-error" id="echart2" onclick="clickError('echart2',true,'err3')">
+                  <div class="error-chart-label lang-es">Tendencia de Errores — Últimas 6 Semanas</div>
+                  <div class="error-chart-label lang-en">Error Trend — Last 6 Weeks</div>
+                  <canvas id="challengeTrend"></canvas>
+                </div>
+              </div>
+
+              <div class="error-chart-panel clickable-error" style="border-top:1px solid var(--border)" id="echart3" onclick="clickError('echart3',true,'err4')">
+                <div class="error-chart-label"><span class="lang-es-inline">% Registros con Error por Fuente — El mayor porcentaje está en SAP (34%)</span><span class="lang-en-inline">% Records with Error by Source — Highest % is SAP (34%)</span></div>
+                <canvas id="challengePie"></canvas>
+              </div>
+            </div>
+
+            <!-- SOLUTION -->
+            <div id="solutionPanel" class="solution-panel">
+              <div class="solution-header">✅
+                <span class="lang-es-inline">Solución — Los 4 Errores</span>
+                <span class="lang-en-inline">Solution — The 4 Errors</span>
+              </div>
+
+              <div class="error-item">
+                <div class="error-num">1</div>
+                <div>
+                  <div class="error-description lang-es"><strong>Error de color en KPI "Válidos"</strong> — El KPI de registros válidos (1,098) usa color <strong>rojo</strong>. El rojo comunica peligro o problema. Un valor positivo debe mostrarse en <em style="color:var(--success)">verde</em>.</div>
+                  <div class="error-description lang-en"><strong>Color error in "Valid Records" KPI</strong> — The valid records KPI (1,098) uses <strong>red</strong> color. Red communicates danger or problem. A positive value must be shown in <em style="color:var(--success)">green</em>.</div>
+                  <div class="error-rule lang-es">Regla: <em>Los colores tienen semántica. Verde = bien. Rojo = problema. Nunca los intercambies.</em></div>
+                  <div class="error-rule lang-en">Rule: <em>Colors have semantics. Green = good. Red = problem. Never swap them.</em></div>
+                </div>
+              </div>
+
+              <div class="error-item">
+                <div class="error-num">2</div>
+                <div>
+                  <div class="error-description lang-es"><strong>Error de color en KPI "Con Errores"</strong> — El KPI de errores (142) usa color <strong>verde</strong>. 142 registros con error no es algo positivo. Debe ser <em style="color:var(--danger)">rojo o naranja</em>.</div>
+                  <div class="error-description lang-en"><strong>Color error in "With Errors" KPI</strong> — The errors KPI (142) uses <strong>green</strong> color. 142 error records is not a positive thing. It should be <em style="color:var(--danger)">red or orange</em>.</div>
+                  <div class="error-rule lang-es">Regla: <em>El color de un KPI debe reflejar si el valor es favorable o desfavorable para el negocio.</em></div>
+                  <div class="error-rule lang-en">Rule: <em>KPI color must reflect whether the value is favorable or unfavorable for the business.</em></div>
+                </div>
+              </div>
+
+              <div class="error-item">
+                <div class="error-num">3</div>
+                <div>
+                  <div class="error-description lang-es"><strong>Gráfica de línea descendente sin contexto</strong> — La tendencia muestra caída de errores semana a semana, pero <strong>no hay una línea de meta/umbral</strong>. Sin referencia, el lector no sabe si la caída es suficiente o si sigue siendo un problema.</div>
+                  <div class="error-description lang-en"><strong>Descending line chart without context</strong> — The trend shows errors dropping week by week, but <strong>there is no target/threshold line</strong>. Without reference, the reader doesn't know if the drop is sufficient or still a problem.</div>
+                  <div class="error-rule lang-es">Regla: <em>Una tendencia sin benchmark no cuenta una historia completa. Siempre agrega una línea de referencia.</em></div>
+                  <div class="error-rule lang-en">Rule: <em>A trend without a benchmark doesn't tell a complete story. Always add a reference line.</em></div>
+                </div>
+              </div>
+
+              <div class="error-item">
+                <div class="error-num">4</div>
+                <div>
+                  <div class="error-description lang-es"><strong>Tipo de gráfica incorrecto para comparar porcentajes</strong> — Se usa una gráfica de <strong>pie/dona</strong> para comparar 5 fuentes de datos. Las gráficas de pie son difíciles de leer cuando hay más de 3 categorías. Una <em style="color:var(--success)">barra horizontal ordenada de mayor a menor</em> comunica la comparación mucho mejor.</div>
+                  <div class="error-description lang-en"><strong>Wrong chart type for percentage comparison</strong> — A <strong>pie/donut chart</strong> is used to compare 5 data sources. Pie charts are hard to read with more than 3 categories. A <em style="color:var(--success)">horizontal bar chart sorted high to low</em> communicates the comparison much better.</div>
+                  <div class="error-rule lang-es">Regla: <em>Pie charts solo cuando tienes 2-3 categorías y quieres mostrar parte del todo. Para rankings y comparaciones, usa barras.</em></div>
+                  <div class="error-rule lang-en">Rule: <em>Pie charts only when you have 2-3 categories and want to show part of a whole. For rankings and comparisons, use bars.</em></div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: QUIZ -->
+      <div id="tab-quiz-m1" class="tab-content">
+        <div class="quiz-panel">
+          <div class="quiz-header">
+            <div class="quiz-title">🎯
+              <span class="lang-es-inline">Quiz — Estilo PL-300</span>
+              <span class="lang-en-inline">Quiz — PL-300 Style</span>
+            </div>
+            <div class="quiz-progress" id="quizProgress">1 / 9</div>
+          </div>
+
+          <!-- Q1 -->
+          <div class="quiz-q active" id="q1">
+            <div class="quiz-question lang-es">¿Cuál es la diferencia principal entre <strong>Merge</strong> y <strong>Append</strong> en Power Query?</div>
+            <div class="quiz-question lang-en">What is the main difference between <strong>Merge</strong> and <strong>Append</strong> in Power Query?</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(1,0,false)">
+                <span class="lang-es-inline">Merge agrega filas; Append une columnas de dos tablas</span>
+                <span class="lang-en-inline">Merge adds rows; Append joins columns from two tables</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(1,1,true)">
+                <span class="lang-es-inline">Merge une tablas por columna común (horizontal); Append apila tablas (vertical)</span>
+                <span class="lang-en-inline">Merge joins tables by a common column (horizontal); Append stacks tables (vertical)</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(1,2,false)">
+                <span class="lang-es-inline">Son lo mismo; solo cambia el nombre en versiones diferentes</span>
+                <span class="lang-en-inline">They are the same; only the name changes in different versions</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(1,3,false)">
+                <span class="lang-es-inline">Append requiere que las tablas tengan el mismo número de filas</span>
+                <span class="lang-en-inline">Append requires both tables to have the same number of rows</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb1"></div>
+            <div class="quiz-nav">
+              <div></div>
+              <button class="btn-primary" onclick="nextQ(1)" id="next1" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span>
+                <span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quiz-q" id="q2">
+            <div class="quiz-question lang-es">Un analista nota que la columna <strong>OrderDate</strong> en una tabla de ventas fue importada como tipo <strong>Text</strong>. ¿Qué impacto tiene esto en el modelo?</div>
+            <div class="quiz-question lang-en">An analyst notices that the <strong>OrderDate</strong> column in a sales table was imported as <strong>Text</strong> type. What impact does this have on the model?</div>
+            <div class="quiz-context lang-es">Contexto: Estás construyendo un reporte de ventas por período. Necesitas calcular días entre OrderDate y ShipDate para análisis de fulfillment.</div>
+            <div class="quiz-context lang-en">Context: You are building a sales performance report. You need to calculate days between OrderDate and ShipDate for fulfillment analysis.</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(2,0,false)">
+                <span class="lang-es-inline">Ninguno — Power BI convierte automáticamente</span>
+                <span class="lang-en-inline">None — Power BI converts automatically</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(2,1,false)">
+                <span class="lang-es-inline">El visual de fechas no se mostrará correctamente</span>
+                <span class="lang-en-inline">The date visual won't display correctly</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(2,2,true)">
+                <span class="lang-es-inline">No podrás hacer cálculos de tiempo (DATEDIFF, días de fulfillment) — DAX requiere tipo Date</span>
+                <span class="lang-en-inline">You can't perform time calculations (DATEDIFF, fulfillment days) — DAX requires Date type</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(2,3,false)">
+                <span class="lang-es-inline">Aumenta el tamaño del modelo significativamente</span>
+                <span class="lang-en-inline">It significantly increases model size</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb2"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(2)">
+                <span class="lang-es-inline">← Anterior</span>
+                <span class="lang-en-inline">← Previous</span>
+              </button>
+              <button class="btn-primary" onclick="nextQ(2)" id="next2" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span>
+                <span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quiz-q" id="q3">
+            <div class="quiz-question lang-es">¿Cuándo se <strong>rompe</strong> el Query Folding en Power Query?</div>
+            <div class="quiz-question lang-en">When does <strong>Query Folding break</strong> in Power Query?</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(3,0,false)">
+                <span class="lang-es-inline">Cuando filtras más de 1,000 filas</span>
+                <span class="lang-en-inline">When you filter more than 1,000 rows</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(3,1,true)">
+                <span class="lang-es-inline">Cuando agregas un paso que no puede traducirse a SQL — como un paso personalizado en M</span>
+                <span class="lang-en-inline">When you add a step that cannot be translated to SQL — such as a custom M step</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(3,2,false)">
+                <span class="lang-es-inline">Cuando usas DirectQuery en lugar de Import</span>
+                <span class="lang-en-inline">When you use DirectQuery instead of Import</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(3,3,false)">
+                <span class="lang-es-inline">Query Folding solo aplica a fuentes CSV</span>
+                <span class="lang-en-inline">Query Folding only applies to CSV sources</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb3"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(3)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(3)" id="next3" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quiz-q" id="q4">
+            <div class="quiz-question lang-es">Tienes dos tablas: <strong>Sales</strong> y <strong>Products</strong>. Quieres agregar el nombre y categoría del producto a cada venta. ¿Qué operación usas?</div>
+            <div class="quiz-question lang-en">You have two tables: <strong>Sales</strong> and <strong>Products</strong>. You want to add the product name and category to each sale. What operation do you use?</div>
+            <div class="quiz-context">Sales: OrderID, ProductID, Amount, OrderDate | Products: ProductID, ProductName, Category, UnitCost</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(4,0,false)">Append</button>
+              <button class="quiz-option" onclick="answerQ(4,1,true)">
+                <span class="lang-es-inline">Merge (Left Outer Join por ProductID)</span>
+                <span class="lang-en-inline">Merge (Left Outer Join on ProductID)</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(4,2,false)">
+                <span class="lang-es-inline">Transpose</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(4,3,false)">
+                <span class="lang-es-inline">Group By</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb4"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(4)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(4)" id="next4" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q5 -->
+          <div class="quiz-q" id="q5">
+            <div class="quiz-question lang-es">Un dataset de 500,000 transacciones de retail tarda 8 minutos en refrescarse. Tu manager quiere reducirlo a menos de 2 minutos. ¿Cuál es la primera acción que revisarías?</div>
+            <div class="quiz-question lang-en">A dataset of 500,000 retail transactions takes 8 minutes to refresh. Your manager wants it under 2 minutes. What's the first thing you'd investigate?</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(5,0,false)">
+                <span class="lang-es-inline">Reducir el número de visuales en el reporte</span>
+                <span class="lang-en-inline">Reduce the number of visuals in the report</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(5,1,false)">
+                <span class="lang-es-inline">Cambiar todos los tipos de datos a Text</span>
+                <span class="lang-en-inline">Change all data types to Text</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(5,2,true)">
+                <span class="lang-es-inline">Verificar si Query Folding está activo y si los Applied Steps están optimizados</span>
+                <span class="lang-en-inline">Verify if Query Folding is active and if Applied Steps are optimized</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(5,3,false)">
+                <span class="lang-es-inline">Eliminar la mitad de los registros del dataset</span>
+                <span class="lang-en-inline">Delete half the records from the dataset</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb5"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(5)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(5)" id="next5" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q6 — DirectQuery vs Import vs DirectLake -->
+          <div class="quiz-q" id="q6">
+            <div class="quiz-question lang-es">Una planta manufacturera tiene <strong>80GB de datos de producción</strong> que se actualizan cada 10 minutos. No usan Microsoft Fabric. Los analistas necesitan ver el estado de línea en tiempo real. ¿Qué modo de conexión recomiendas?</div>
+            <div class="quiz-question lang-en">A manufacturing plant has <strong>80GB of production data</strong> updated every 10 minutes. They don't use Microsoft Fabric. Analysts need real-time line status visibility. What connection mode should you recommend?</div>
+            <div class="quiz-context lang-es">Contexto: Modelo actual en Import. Refresh cada 8 horas. Dataset supera 1GB comprimido. La planta opera 24/7.</div>
+            <div class="quiz-context lang-en">Context: Current model uses Import. Scheduled refresh every 8 hours. Dataset exceeds 1GB compressed. Plant operates 24/7.</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(6,0,false)">
+                <span class="lang-es-inline">Import — aumentar el refresh a cada hora</span>
+                <span class="lang-en-inline">Import — increase refresh to every hour</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(6,1,false)">
+                <span class="lang-es-inline">DirectLake — conectar a OneLake para datos frescos</span>
+                <span class="lang-en-inline">DirectLake — connect to OneLake for fresh data</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(6,2,true)">
+                <span class="lang-es-inline">DirectQuery — datos en la fuente, siempre actualizados, sin límite de tamaño</span>
+                <span class="lang-en-inline">DirectQuery — data stays at source, always current, no size limit</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(6,3,false)">
+                <span class="lang-es-inline">Live Connection — conectar a Analysis Services</span>
+                <span class="lang-en-inline">Live Connection — connect to Analysis Services</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb6"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(6)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(6)" id="next6" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+
+          <!-- Q7 — Pivot vs Unpivot -->
+          <div class="quiz-q" id="q7">
+            <div class="quiz-question lang-es">Recibes un reporte de ventas de Excel con columnas <strong>Enero, Febrero, Marzo, Abril, Mayo, Junio</strong> — cada columna contiene el total de ventas de ese mes. ¿Qué transformación necesitas para que DAX pueda calcular correctamente por período?</div>
+            <div class="quiz-question lang-en">You receive a sales Excel report with columns <strong>January, February, March, April, May, June</strong> — each column contains total sales for that month. What transformation do you need so DAX can calculate correctly by period?</div>
+            <div class="quiz-context lang-es">Contexto: Necesitas crear una medida de ventas YTD (Year-to-Date) con Time Intelligence DAX.</div>
+            <div class="quiz-context lang-en">Context: You need to create a YTD (Year-to-Date) sales measure using DAX Time Intelligence.</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(7,0,false)">
+                <span class="lang-es-inline">Pivot — convertir filas en columnas</span>
+                <span class="lang-en-inline">Pivot — convert rows into columns</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(7,1,true)">
+                <span class="lang-es-inline">Unpivot — convertir las columnas de meses en una columna "Mes" y una columna "Ventas"</span>
+                <span class="lang-en-inline">Unpivot — convert the month columns into a "Month" column and a "Sales" column</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(7,2,false)">
+                <span class="lang-es-inline">Transpose — intercambiar filas y columnas</span>
+                <span class="lang-en-inline">Transpose — swap rows and columns</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(7,3,false)">
+                <span class="lang-es-inline">Group By — agrupar por mes</span>
+                <span class="lang-en-inline">Group By — group by month</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb7"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(7)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(7)" id="next7" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q8 — Reference vs Duplicate -->
+          <div class="quiz-q" id="q8">
+            <div class="quiz-question lang-es">Tienes una query base <strong>Sales_Raw</strong> con 15 pasos de limpieza. Necesitas crear dos versiones: <strong>Sales_Online</strong> y <strong>Sales_Retail</strong> con diferentes filtros. ¿Qué operación usas y por qué?</div>
+            <div class="quiz-question lang-en">You have a base query <strong>Sales_Raw</strong> with 15 cleaning steps. You need to create two versions: <strong>Sales_Online</strong> and <strong>Sales_Retail</strong> with different filters. What operation do you use and why?</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(8,0,false)">
+                <span class="lang-es-inline">Duplicate — para que cada versión sea independiente y los cambios no se propaguen</span>
+                <span class="lang-en-inline">Duplicate — so each version is independent and changes don't propagate</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(8,1,true)">
+                <span class="lang-es-inline">Reference — los 15 pasos de limpieza se ejecutan una sola vez; cada versión solo agrega su filtro</span>
+                <span class="lang-en-inline">Reference — the 15 cleaning steps run only once; each version just adds its own filter</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(8,2,false)">
+                <span class="lang-es-inline">Append — combinar las dos queries en una sola tabla</span>
+                <span class="lang-en-inline">Append — combine both queries into a single table</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(8,3,false)">
+                <span class="lang-es-inline">Merge — unir por columna común</span>
+                <span class="lang-en-inline">Merge — join by common column</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb8"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(8)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="nextQ(8)" id="next8" style="display:none">
+                <span class="lang-es-inline">Siguiente →</span><span class="lang-en-inline">Next →</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q9 — Privacy Levels / Configure Load -->
+          <div class="quiz-q" id="q9">
+            <div class="quiz-question lang-es">Al combinar datos de una fuente SQL corporativa con datos de una API pública externa, Power BI muestra el error <strong>"Formula.Firewall: Query references other queries..."</strong>. ¿Cuál es la causa y la solución?</div>
+            <div class="quiz-question lang-en">When combining data from a corporate SQL source with data from an external public API, Power BI shows the error <strong>"Formula.Firewall: Query references other queries..."</strong>. What is the cause and solution?</div>
+            <div class="quiz-options">
+              <button class="quiz-option" onclick="answerQ(9,0,false)">
+                <span class="lang-es-inline">Error de tipo de dato — cambiar columnas a Text</span>
+                <span class="lang-en-inline">Data type error — change columns to Text</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(9,1,false)">
+                <span class="lang-es-inline">Query Folding roto — agregar pasos compatibles con SQL</span>
+                <span class="lang-en-inline">Broken Query Folding — add SQL-compatible steps</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(9,2,true)">
+                <span class="lang-es-inline">Niveles de privacidad incompatibles — configurar la fuente SQL como Organizational y la API como Public</span>
+                <span class="lang-en-inline">Incompatible privacy levels — set the SQL source as Organizational and the API as Public</span>
+              </button>
+              <button class="quiz-option" onclick="answerQ(9,3,false)">
+                <span class="lang-es-inline">Credenciales incorrectas — re-autenticar ambas fuentes</span>
+                <span class="lang-en-inline">Incorrect credentials — re-authenticate both sources</span>
+              </button>
+            </div>
+            <div class="quiz-feedback" id="fb9"></div>
+            <div class="quiz-nav">
+              <button class="btn-secondary" onclick="prevQ(9)">← <span class="lang-es-inline">Anterior</span><span class="lang-en-inline">Previous</span></button>
+              <button class="btn-primary" onclick="finishQuiz()" id="next9" style="display:none">
+                <span class="lang-es-inline">Ver resultados</span><span class="lang-en-inline">See results</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- SCORE -->
+          <div class="quiz-q" id="qscore">
+            <div class="score-display">
+              <div class="score-big" id="scoreBig">0/6</div>
+              <div id="scoreMsg" style="font-size:0.95rem;color:var(--text-dim);margin-bottom:1.5rem"></div>
+              <button class="btn-primary" onclick="resetQuiz()">
+                <span class="lang-es-inline">↺ Reintentar</span>
+                <span class="lang-en-inline">↺ Try again</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- TAB: ROADMAP -->
+      <div id="tab-roadmap-m1" class="tab-content">
+        <div class="roadmap-section">
+          <div class="roadmap-title lang-es">🗺️ Tu Roadmap de Certificaciones — Post PL-300</div>
+          <div class="roadmap-title lang-en">🗺️ Your Certification Roadmap — Post PL-300</div>
+
+          <div class="cert-timeline">
+            <div class="cert-item current-cert">
+              <div class="cert-dot-col"><div class="cert-dot current">📊</div></div>
+              <div class="cert-content">
+                <div class="cert-name">PL-300 — Power BI Data Analyst ← AHORA</div>
+                <div class="cert-detail lang-es">Base de todo lo demás. Sin esto, el resto es difícil de contextualizar. Duración: 6-8 semanas.</div>
+                <div class="cert-detail lang-en">The foundation of everything else. Without this, the rest is hard to contextualize. Duration: 6-8 weeks.</div>
+                <div class="cert-concepts">
+                  <span class="cert-tag">Power Query</span><span class="cert-tag">DAX</span><span class="cert-tag">Star Schema</span><span class="cert-tag">Storytelling</span><span class="cert-tag">RLS</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cert-item">
+              <div class="cert-dot-col"><div class="cert-dot next">🗄️</div></div>
+              <div class="cert-content">
+                <div class="cert-name">SQL — (HackerRank / Mode / DataLemur)</div>
+                <div class="cert-detail lang-es">Paralelo al PL-300. El 80% de roles BI/Analytics requieren SQL. Es el lenguaje universal de los datos.</div>
+                <div class="cert-detail lang-en">Parallel to PL-300. 80% of BI/Analytics roles require SQL. It's the universal language of data.</div>
+                <div class="cert-concepts">
+                  <span class="cert-tag">SELECT/JOIN</span><span class="cert-tag">Window Functions</span><span class="cert-tag">CTEs</span><span class="cert-tag">Aggregations</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cert-item">
+              <div class="cert-dot-col"><div class="cert-dot next">☁️</div></div>
+              <div class="cert-content">
+                <div class="cert-name">DP-900 — Azure Data Fundamentals</div>
+                <div class="cert-detail lang-es">Valida conocimiento de cloud + datos. Muy demandado en roles remotos. Duración: 2-3 semanas.</div>
+                <div class="cert-detail lang-en">Validates cloud + data knowledge. Highly demanded in remote roles. Duration: 2-3 weeks.</div>
+                <div class="cert-concepts">
+                  <span class="cert-tag">Azure SQL</span><span class="cert-tag">Data Lake</span><span class="cert-tag">Cosmos DB</span><span class="cert-tag">Synapse</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cert-item">
+              <div class="cert-dot-col"><div class="cert-dot future">🔵</div></div>
+              <div class="cert-content">
+                <div class="cert-name">Google Data Analytics Certificate</div>
+                <div class="cert-detail lang-es">Reconocido globalmente. Abre puertas en empresas que no usan stack Microsoft. Incluye R y Tableau básico.</div>
+                <div class="cert-detail lang-en">Globally recognized. Opens doors at companies not on Microsoft stack. Includes R and basic Tableau.</div>
+                <div class="cert-concepts">
+                  <span class="cert-tag">R</span><span class="cert-tag">Tableau</span><span class="cert-tag">Spreadsheets</span><span class="cert-tag">BigQuery</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="cert-item">
+              <div class="cert-dot-col"><div class="cert-dot future">🔩</div></div>
+              <div class="cert-content">
+                <div class="cert-name">dbt — Analytics Engineering</div>
+                <div class="cert-detail lang-es">El futuro del analytics moderno. Conecta SQL con ingeniería de datos. Roles: $95K–$140K USD/año remoto.</div>
+                <div class="cert-detail lang-en">The future of modern analytics. Connects SQL with data engineering. Roles: $95K–$140K USD/year remote.</div>
+                <div class="cert-concepts">
+                  <span class="cert-tag">Data Modeling</span><span class="cert-tag">Jinja</span><span class="cert-tag">Data Testing</span><span class="cert-tag">Lineage</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roadmap-section">
+          <div class="roadmap-title lang-es">💡 Conceptos Clave que se Integran a Futuro</div>
+          <div class="roadmap-title lang-en">💡 Key Concepts to Integrate in the Future</div>
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-top:1rem">
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px">Kimball Dimensional Modeling</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">El estándar de la industria para diseño de data warehouses. Extensión natural del Star Schema.</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px">Python para Datos</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">Pandas, Matplotlib, Seaborn. Automatiza lo que Power Query hace manualmente.</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px">Executive Storytelling</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">SCQA Framework (McKinsey). Situation → Complication → Question → Answer.</div>
+            </div>
+            <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:12px">
+              <div style="font-size:0.82rem;font-weight:700;margin-bottom:4px">Freight Analytics Niche</div>
+              <div style="font-size:0.75rem;color:var(--text-muted)">Supply Chain KPIs, Financial Analytics, Inventory Optimization. Nicho de alto valor en el mercado.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /m1 -->
+
+  </main>
+</div>
+
+<script>
+// LANGUAGE TOGGLE
+function setLang(lang) {
+  const themeClass = [...document.body.classList].find(c => c.startsWith('theme-')) || '';
+  document.body.className = (themeClass ? themeClass + ' ' : '') + 'lang-active-' + lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+}
+
+// THEME TOGGLE
+function setTheme(theme, btn) {
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const langClass = [...document.body.classList].find(c => c.startsWith('lang-active-')) || 'lang-active-es';
+  document.body.className = langClass + (theme !== 'default' ? ' theme-' + theme : '');
+}
+
+// BILINGUAL ALERT
+function alertBilingual(es, en) {
+  const isEn = document.body.classList.contains('lang-active-en');
+  alert(isEn ? en : es);
+}
+
+// PAGE NAV
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.module-item').forEach(m => m.classList.remove('active'));
+}
+
+// TAB NAV
+function showTab(tab, module) {
+  const allTabs = document.querySelectorAll(`#${module} .tab-content`);
+  allTabs.forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${tab}-${module}`).classList.add('active');
+  document.querySelectorAll(`#${module} .tab-btn`).forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  if (tab === 'dashboard') setTimeout(initDashboardCharts, 100);
+  if (tab === 'challenge') setTimeout(initChallengeCharts, 100);
+}
+
+// CHARTS — MAIN DASHBOARD
+let dashCharts = {};
+
+function initDashboardCharts() {
+  if (dashCharts.errorType) { Object.values(dashCharts).forEach(c => c.destroy()); dashCharts = {}; }
+
+  const gridColor = 'rgba(255,255,255,0.05)';
+  const textColor = '#64748b';
+
+  dashCharts.errorType = new Chart(document.getElementById('errorTypeChart'), {
+    type: 'bar',
+    data: {
+      labels: ['Null Values','Type Errors','Duplicates','Format Error','Missing ID'],
+      datasets: [{
+        data: [58, 34, 27, 15, 8],
+        backgroundColor: ['#ef4444','#f59e0b','#8b5cf6','#06b6d4','#6b7280'],
+        borderRadius: 6,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 11 } } },
+        y: { grid: { display: false }, ticks: { color: textColor, font: { size: 11 } } }
+      }
+    }
+  });
+
+  dashCharts.qualityDonut = new Chart(document.getElementById('qualityDonut'), {
+    type: 'doughnut',
+    data: {
+      labels: ['Valid','Nulls','Type Errors','Duplicates','Other'],
+      datasets: [{
+        data: [1098, 58, 34, 27, 23],
+        backgroundColor: ['#10b981','#ef4444','#f59e0b','#8b5cf6','#6b7280'],
+        borderWidth: 0,
+        hoverOffset: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: '68%',
+      plugins: {
+        legend: { position: 'right', labels: { color: textColor, font: { size: 10 }, boxWidth: 10, padding: 8 } }
+      }
+    }
+  });
+
+  dashCharts.trend = new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+      labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6'],
+      datasets: [{
+        label: 'Errors',
+        data: [28, 35, 31, 22, 18, 8],
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.08)',
+        fill: true,
+        tension: 0.4,
+        pointRadius: 4,
+        pointBackgroundColor: '#ef4444',
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } },
+        y: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } } }
+      }
+    }
+  });
+
+  dashCharts.source = new Chart(document.getElementById('sourceChart'), {
+    type: 'bar',
+    data: {
+      labels: ['SAP ERP','Excel Manual','ERP API','Flat File','Web Portal'],
+      datasets: [{
+        label: '% Error Rate',
+        data: [34, 28, 12, 8, 18],
+        backgroundColor: 'rgba(0,212,255,0.6)',
+        borderRadius: 4,
+        borderSkipped: false,
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: gridColor }, ticks: { color: textColor, font: { size: 10 } }, max: 40 },
+        y: { grid: { display: false }, ticks: { color: textColor, font: { size: 10 } } }
+      }
+    }
+  });
+}
+
+// DASHBOARD FILTER
+// Filter state data per type
+const dashData = {
+  all:   { errorType:[58,34,27,15,8], donut:[1098,58,34,27,23], trend:[28,35,31,22,18,8], source:[34,28,12,8,18] },
+  nulls: { errorType:[58,0,0,0,0],    donut:[1182,58,0,0,0],    trend:[14,18,16,10,8,3],  source:[20,15,0,0,5]  },
+  dupes: { errorType:[0,0,27,0,0],    donut:[1213,0,27,0,0],    trend:[6,8,7,5,4,2],      source:[8,10,5,2,4]   },
+  types: { errorType:[0,34,0,15,8],   donut:[1183,0,34,15,8],   trend:[8,9,8,7,6,3],      source:[6,3,7,6,9]    }
+};
+
+const dashLabels = {
+  all:   ['Null Values','Type Errors','Duplicates','Format Error','Missing ID'],
+  nulls: ['Null Values','Type Errors','Duplicates','Format Error','Missing ID'],
+  dupes: ['Null Values','Type Errors','Duplicates','Format Error','Missing ID'],
+  types: ['Null Values','Type Errors','Duplicates','Format Error','Missing ID']
+};
+
+function filterDash(type, btn) {
+  document.querySelectorAll('.dash-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const d = dashData[type];
+
+  // Highlight/dim chart panels
+  const panels = ['panelErrorType','panelQuality','panelTrend','panelSource'];
+  panels.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.style.transition = 'opacity 0.3s';
+    el.style.opacity = type === 'all' ? '1' : '0.4';
+  });
+  if (type !== 'all') {
+    ['panelErrorType','panelTrend','panelSource'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.opacity = '1';
+    });
+  }
+
+  // Update charts with filtered data
+  if (dashCharts.errorType) {
+    dashCharts.errorType.data.datasets[0].data = d.errorType;
+    dashCharts.errorType.update('active');
+  }
+  if (dashCharts.qualityDonut) {
+    dashCharts.qualityDonut.data.datasets[0].data = d.donut;
+    dashCharts.qualityDonut.update('active');
+  }
+  if (dashCharts.trend) {
+    dashCharts.trend.data.datasets[0].data = d.trend;
+    dashCharts.trend.update('active');
+  }
+  if (dashCharts.source) {
+    dashCharts.source.data.datasets[0].data = d.source;
+    dashCharts.source.update('active');
+  }
+
+  // KPI highlight: dim non-relevant cards
+  document.querySelectorAll('[data-type]').forEach(card => {
+    const types = card.getAttribute('data-type').split(' ');
+    card.style.transition = 'opacity 0.3s';
+    card.style.opacity = (type === 'all' || types.includes(type) || types.includes('all')) ? '1' : '0.35';
+  });
+}
+
+// CHALLENGE CHARTS
+let challengeCharts = {};
+let errorsFound = 0;
+let foundSet = new Set();
+
+function initChallengeCharts() {
+  if (challengeCharts.bar) { Object.values(challengeCharts).forEach(c => c.destroy()); challengeCharts = {}; }
+
+  const gridColor = 'rgba(255,255,255,0.05)';
+  const textColor = '#64748b';
+
+  // Bar (correct one)
+  challengeCharts.bar = new Chart(document.getElementById('challengeBar'), {
+    type: 'bar',
+    data: {
+      labels: ['Null Values','Type Errors','Duplicates','Format','Missing ID'],
+      datasets: [{ data: [58,34,27,15,8], backgroundColor: '#ef4444', borderRadius:4, borderSkipped:false }]
+    },
+    options: {
+      indexAxis: 'y', responsive:false, maintainAspectRatio:false,
+      animation: false,
+      plugins: { legend: { display:false } },
+      scales: {
+        x: { grid:{color:gridColor}, ticks:{color:textColor,font:{size:10}} },
+        y: { grid:{display:false}, ticks:{color:textColor,font:{size:10}} }
+      }
+    }
+  });
+
+  // Trend (missing threshold line — error 3)
+  challengeCharts.trend = new Chart(document.getElementById('challengeTrend'), {
+    type: 'line',
+    data: {
+      labels: ['Wk1','Wk2','Wk3','Wk4','Wk5','Wk6'],
+      datasets: [{
+        label: 'Errors',
+        data: [28,35,31,22,18,8],
+        borderColor: '#ef4444',
+        backgroundColor: 'rgba(239,68,68,0.08)',
+        fill:true, tension:0.4, pointRadius:4, pointBackgroundColor:'#ef4444'
+      }]
+      // NOTE: No threshold line — this is the deliberate error
+    },
+    options: {
+      responsive:false, maintainAspectRatio:false,
+      animation: false,
+      plugins: { legend:{display:false} },
+      scales: {
+        x: { grid:{color:gridColor}, ticks:{color:textColor,font:{size:10}} },
+        y: { grid:{color:gridColor}, ticks:{color:textColor,font:{size:10}} }
+      }
+    }
+  });
+
+  // Pie (wrong chart type for 5 categories — error 4)
+  challengeCharts.pie = new Chart(document.getElementById('challengePie'), {
+    type: 'pie',
+    data: {
+      labels: ['SAP ERP','Excel Manual','ERP API','Flat File','Web Portal'],
+      datasets: [{
+        data: [34,28,12,8,18],
+        backgroundColor: ['#ef4444','#f59e0b','#8b5cf6','#06b6d4','#6b7280'],
+        borderWidth: 0
+      }]
+    },
+    options: {
+      responsive:false, maintainAspectRatio:false,
+      animation: false,
+      plugins: {
+        legend: { position:'right', labels:{color:textColor,font:{size:9},boxWidth:8,padding:6} }
+      }
+    }
+  });
+}
+
+function clickError(id, isError, errorId) {
+  const el = document.getElementById(id);
+  if (foundSet.has(id)) return;
+
+  if (isError) {
+    if (!foundSet.has(id)) {
+      foundSet.add(id);
+      errorsFound++;
+      document.getElementById('errCount').textContent = errorsFound;
+      el.classList.add('found-error');
+      if (errorsFound === 4) {
+        setTimeout(() => { alertBilingual('🎯 ¡Encontraste los 4 errores! Haz clic en "Ver solución" para la explicación completa.','🎯 You found all 4 errors! Click "Show solution" for the full explanation.'); }, 200);
+      }
+    }
+  } else {
+    el.style.boxShadow = '0 0 0 2px rgba(16,185,129,0.4)';
+    el.classList.add('correct');
+    setTimeout(() => { el.classList.remove('correct'); el.style.boxShadow=''; }, 1200);
+  }
+}
+
+function showHint() {
+  document.getElementById('hintBox').classList.toggle('visible');
+}
+
+function showSolution() {
+  document.getElementById('solutionPanel').classList.add('visible');
+  document.getElementById('solutionPanel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function resetChallenge() {
+  errorsFound = 0;
+  foundSet.clear();
+  document.getElementById('errCount').textContent = '0';
+  document.querySelectorAll('.error-kpi, .error-chart-panel').forEach(el => {
+    el.classList.remove('found-error','correct');
+    el.style.boxShadow = '';
+  });
+  document.getElementById('solutionPanel').classList.remove('visible');
+  document.getElementById('hintBox').classList.remove('visible');
+}
+
+// QUIZ
+let quizScore = 0;
+let currentQ = 1;
+
+const feedbacks = {
+  1: {
+    correct: { es: '✅ Correcto. Merge es horizontal (añade columnas) usando una columna común como llave. Append es vertical (añade filas) apilando tablas con la misma estructura.', en: '✅ Correct. Merge is horizontal (adds columns) using a common key column. Append is vertical (adds rows) stacking tables with the same structure.' },
+    wrong: { es: '❌ Incorrecto. Merge une tablas por una columna común — como un JOIN en SQL. Append apila filas de tablas con la misma estructura de columnas.', en: '❌ Incorrect. Merge joins tables by a common column — like a SQL JOIN. Append stacks rows from tables with the same column structure.' }
+  },
+  2: {
+    correct: { es: '✅ Exacto. DAX no puede hacer aritmética de fechas sobre tipo Text. DATEDIFF, DATEADD, y todas las funciones de Time Intelligence requieren tipo Date. Sin esto, no puedes calcular días de fulfillment, lead times ni variaciones de período.', en: '✅ Exactly. DAX cannot perform date arithmetic on Text type. DATEDIFF, DATEADD, and all Time Intelligence functions require Date type. This is a very common error in real projects.' },
+    wrong: { es: '❌ Incorrecto. Power BI NO convierte automáticamente. El impacto crítico es que no puedes hacer cálculos de tiempo — esencial para aging reports y análisis de SLA.', en: '❌ Incorrect. Power BI does NOT convert automatically. The critical impact is that you cannot perform time calculations — essential for aging reports and SLA analysis.' }
+  },
+  3: {
+    correct: { es: '✅ Correcto. El Query Folding se rompe cuando agregas un paso que el motor no puede traducir a SQL del servidor de origen. Todo lo que sigue corre en memoria local — mucho más lento.', en: '✅ Correct. Query Folding breaks when you add a step the engine cannot translate to the source server\'s SQL. Everything after runs in local memory — much slower.' },
+    wrong: { es: '❌ Incorrecto. Query Folding se rompe por pasos no traducibles a SQL — no por volumen de datos ni por el modo de conexión.', en: '❌ Incorrect. Query Folding breaks due to non-translatable steps — not by data volume or connection mode.' }
+  },
+  4: {
+    correct: { es: '✅ Perfecto. Merge Left Outer Join: tomas todas las filas de Sales y agregas columnas de Products donde ProductID coincide. Resultado: cada venta con nombre y categoría de producto — listo para análisis por categoría o margen.', en: '✅ Perfect. Merge Left Outer Join: you take all rows from Sales and add Products columns where ProductID matches. Result: each sale enriched with product name and category — ready for category or margin analysis.' },
+    wrong: { es: '❌ Incorrecto. Append solo suma filas — no sirve para añadir columnas. Para agregar información de otra tabla necesitas Merge (equivalente a JOIN en SQL).', en: '❌ Incorrect. Append only adds rows — it doesn\'t add columns. To add information from another table you need Merge (equivalent to JOIN in SQL).' }
+  },
+  5: {
+    correct: { es: '✅ Excelente razonamiento. Query Folding activo = la fuente procesa los filtros y transformaciones antes de enviar datos a Power BI. Sin folding, Power BI descarga todo y procesa localmente. En 500K registros, la diferencia puede ser de minutos.', en: '✅ Excellent reasoning. Active Query Folding = the source processes filters and transformations before sending data to Power BI. Without folding, Power BI downloads everything and processes locally. In 500K records, the difference can be minutes.' },
+    wrong: { es: '❌ Incorrecto. El problema de rendimiento está en cómo se cargan los datos, no en los visuales. Query Folding optimizado puede reducir el refresh de 8 minutos a segundos.', en: '❌ Incorrect. The performance issue is in how data is loaded, not in visuals. Optimized Query Folding can reduce refresh from 8 minutes to seconds.' }
+  },
+  6: {
+    correct: { es: '✅ Correcto. DirectQuery es la respuesta correcta: los datos permanecen en la fuente original, siempre actualizados, y no hay límite de tamaño. El trade-off: las consultas son más lentas que Import. DirectLake requiere Fabric, que este cliente no tiene.', en: '✅ Correct. DirectQuery is the right answer: data stays at the source, always current, no size limit. Trade-off: queries are slower than Import. DirectLake requires Fabric, which this client doesn\'t have.' },
+    wrong: { es: '❌ Incorrecto. Import no puede manejar 80GB (límite ~1GB comprimido) ni datos que cambian cada 10 min eficientemente. DirectLake requiere Microsoft Fabric. DirectQuery es la respuesta: datos en la fuente, tiempo real, sin límite de tamaño.', en: '❌ Incorrect. Import can\'t handle 80GB (limit ~1GB compressed) or data changing every 10 min efficiently. DirectLake requires Microsoft Fabric. DirectQuery is the answer: data at source, real-time, no size limit.' }
+  },
+  7: {
+    correct: { es: '✅ Exacto. Unpivot convierte las columnas de meses en filas — una columna "Mes" y una columna "Ventas". Este formato largo (long format) es el que DAX necesita para Time Intelligence. Con columnas "Enero, Febrero..." DAX no puede calcular YTD, QTD, ni comparativas de período.', en: '✅ Exactly. Unpivot converts the month columns into rows — a "Month" column and a "Sales" column. This long format is what DAX needs for Time Intelligence. With "January, February..." columns, DAX cannot calculate YTD, QTD, or period comparisons.' },
+    wrong: { es: '❌ Incorrecto. Pivot va en la dirección contraria (filas → columnas). Transpose intercambia todo. Group By agrega — pero los datos ya están agregados. La respuesta es Unpivot: normaliza el formato para que DAX pueda procesar el tiempo correctamente.', en: '❌ Incorrect. Pivot goes the opposite direction (rows → columns). Transpose swaps everything. Group By aggregates — but the data is already aggregated. The answer is Unpivot: it normalizes the format so DAX can process time correctly.' }
+  },
+  8: {
+    correct: { es: '✅ Correcto. Reference es la respuesta óptima. Los 15 pasos de limpieza se ejecutan una sola vez en Sales_Raw. Sales_Online y Sales_Retail solo agregan su filtro respectivo. Con Duplicate, los 15 pasos se ejecutarían 3 veces — triple el tiempo de refresh y triple el riesgo de inconsistencia si modificas la limpieza base.', en: '✅ Correct. Reference is the optimal answer. The 15 cleaning steps run only once in Sales_Raw. Sales_Online and Sales_Retail each just add their own filter. With Duplicate, the 15 steps would run 3 times — triple the refresh time and triple the inconsistency risk if you modify the base cleaning.' },
+    wrong: { es: '❌ Incorrecto. Duplicate crearía tres copias independientes — los 15 pasos de limpieza correrían tres veces. Si cambias un paso en Sales_Raw, deberías replicarlo manualmente en las otras dos. Reference es más eficiente y mantenible.', en: '❌ Incorrect. Duplicate would create three independent copies — the 15 cleaning steps would run three times. If you change a step in Sales_Raw, you would need to replicate it manually in the other two. Reference is more efficient and maintainable.' }
+  },
+  9: {
+    correct: { es: '✅ Exacto. El error Formula.Firewall ocurre cuando Power Query intenta combinar datos de fuentes con niveles de privacidad incompatibles o no definidos. Solución: File → Options → Privacy → configurar cada fuente con su nivel correcto. SQL corporativo = Organizational. API pública = Public.', en: '✅ Exactly. The Formula.Firewall error occurs when Power Query tries to combine data from sources with incompatible or undefined privacy levels. Solution: File → Options → Privacy → configure each source with its correct level. Corporate SQL = Organizational. Public API = Public.' },
+    wrong: { es: '❌ Incorrecto. Formula.Firewall es específicamente un error de niveles de privacidad — no de tipos de datos ni de Query Folding. Ocurre cuando Power Query no puede determinar si es seguro compartir datos entre fuentes. La solución siempre pasa por configurar los Privacy Levels correctamente.', en: '❌ Incorrect. Formula.Firewall is specifically a privacy levels error — not a data type or Query Folding issue. It occurs when Power Query cannot determine whether it is safe to share data between sources. The solution always involves configuring Privacy Levels correctly.' }
+  }
+};
+
+function answerQ(qNum, optIdx, isCorrect) {
+  const options = document.querySelectorAll(`#q${qNum} .quiz-option`);
+  options.forEach(o => o.style.pointerEvents = 'none');
+  
+  const lang = document.body.classList.contains('lang-active-en') ? 'en' : 'es';
+  options[optIdx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if (!isCorrect) {
+    // Find correct answer
+    const correctIdx = [true, false, false, false]; // mapped by position
+    options.forEach((o, i) => {
+      if (i !== optIdx) o.style.opacity = '0.5';
+    });
+  }
+
+  const fb = document.getElementById(`fb${qNum}`);
+  fb.className = 'quiz-feedback ' + (isCorrect ? 'correct-fb' : 'wrong-fb');
+  fb.textContent = feedbacks[qNum][isCorrect ? 'correct' : 'wrong'][lang];
+
+  if (isCorrect) quizScore++;
+  document.getElementById(`next${qNum}`).style.display = 'block';
+}
+
+function nextQ(current) {
+  document.getElementById(`q${current}`).classList.remove('active');
+  const next = current + 1;
+  if (next <= 9) {
+    document.getElementById(`q${next}`).classList.add('active');
+    document.getElementById('quizProgress').textContent = `${next} / 9`;
+  }
+}
+
+function prevQ(current) {
+  document.getElementById(`q${current}`).classList.remove('active');
+  document.getElementById(`q${current-1}`).classList.add('active');
+  document.getElementById('quizProgress').textContent = `${current-1} / 9`;
+}
+
+function finishQuiz() {
+  document.getElementById('q9').classList.remove('active');
+  document.getElementById('qscore').classList.add('active');
+  const sb = document.getElementById('scoreBig');
+  const sm = document.getElementById('scoreMsg');
+  const lang = document.body.classList.contains('lang-active-en') ? 'en' : 'es';
+  sb.textContent = `${quizScore}/9`;
+  if (quizScore >= 8) {
+    sb.className = 'score-big great';
+    sm.textContent = lang === 'es' ? '🎯 Dominas este módulo. Estás listo para el Módulo 2.' : '🎯 You dominate this module. Ready for Module 2.';
+  } else if (quizScore >= 6) {
+    sb.className = 'score-big ok';
+    sm.textContent = lang === 'es' ? '📚 Buen trabajo. Revisa los conceptos de las respuestas incorrectas antes de avanzar.' : '📚 Good work. Review the concepts from wrong answers before moving on.';
+  } else {
+    sb.className = 'score-big bad';
+    sm.textContent = lang === 'es' ? '🔄 Regresa a la pestaña Conceptos y repasa. Esto es normal — la repetición es el método.' : '🔄 Go back to Concepts tab and review. This is normal — repetition is the method.';
+  }
+}
+
+function resetQuiz() {
+  quizScore = 0;
+  document.querySelectorAll('.quiz-q').forEach(q => q.classList.remove('active'));
+  document.getElementById('q1').classList.add('active');
+  document.getElementById('quizProgress').textContent = '1 / 9';
+  document.querySelectorAll('.quiz-option').forEach(o => {
+    o.className = 'quiz-option';
+    o.style.pointerEvents = '';
+    o.style.opacity = '';
+  });
+  document.querySelectorAll('.quiz-feedback').forEach(f => f.className = 'quiz-feedback');
+  document.querySelectorAll('[id^="next"]').forEach(b => b.style.display = 'none');
+}
+</script>
+</body>
+</html>
