@@ -1276,6 +1276,15 @@
   }
   .lang-single-btn:hover { border-color: var(--accent); background: rgba(0,212,255,0.15); }
   .lang-single-btn:active { transform: scale(0.95); }
+  /* iOS touch target minimum */
+  @media (max-width: 768px) {
+    .lang-single-btn, .theme-dropdown-btn, .fab-menu {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    .lang-single-btn { display: flex; align-items: center; justify-content: center; }
+    .theme-dropdown-btn { display: flex; align-items: center; }
+  }
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
@@ -1464,7 +1473,7 @@
 <body class="lang-active-es">
 
 <!-- FAB HAMBURGER -->
-<button class="fab-menu" onclick="toggleSidebar()" aria-label="Menu" id="fabBtn" style="color:#e2e8f0;font-size:1.2rem;line-height:1;">☰</button>
+<button class="fab-menu" aria-label="Menu" id="fabBtn">☰</button>
 
 <!-- SIDEBAR OVERLAY -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
@@ -1480,7 +1489,7 @@
 
     <!-- THEME DROPDOWN -->
     <div class="theme-dropdown" id="themeDropdown">
-      <button class="theme-dropdown-btn" onclick="toggleThemeMenu()" id="themeDropBtn">
+      <button class="theme-dropdown-btn" onclick="toggleThemeMenu()" id="themeDropBtn" style="-webkit-tap-highlight-color:transparent;">
         <span id="themeIcon">🌑</span>
         <span style="font-size:0.7rem;color:var(--text-muted)">▾</span>
       </button>
@@ -1492,7 +1501,7 @@
     </div>
 
     <!-- LANG SINGLE BUTTON -->
-    <button class="lang-single-btn" id="langToggleBtn" onclick="toggleLang()">EN</button>
+    <button class="lang-single-btn" id="langToggleBtn" onclick="toggleLang()" style="-webkit-tap-highlight-color:transparent;">EN</button>
   </div>
 </header>
 
@@ -1619,20 +1628,20 @@
 
       <!-- TABS -->
       <div class="tab-nav">
-        <button class="tab-btn active" onclick="showTab('concepts','m1')">
+        <button class="tab-btn active" onclick="showTab(event,'concepts','m1')">
           <span class="lang-es-inline">📚 Conceptos</span>
           <span class="lang-en-inline">📚 Concepts</span>
         </button>
-        <button class="tab-btn" onclick="showTab('dashboard','m1')">
+        <button class="tab-btn" onclick="showTab(event,'dashboard','m1')">
           <span class="lang-es-inline">📊 Dashboard</span>
           <span class="lang-en-inline">📊 Dashboard</span>
         </button>
-        <button class="tab-btn" onclick="showTab('challenge','m1')">
+        <button class="tab-btn" onclick="showTab(event,'challenge','m1')">
           <span class="lang-es-inline">⚠️ Reto</span>
           <span class="lang-en-inline">⚠️ Challenge</span>
         </button>
-        <button class="tab-btn" onclick="showTab('quiz','m1')">Quiz PL-300</button>
-        <button class="tab-btn" onclick="showTab('roadmap','m1')">🗺️ Roadmap</button>
+        <button class="tab-btn" onclick="showTab(event,'quiz','m1')">Quiz PL-300</button>
+        <button class="tab-btn" onclick="showTab(event,'roadmap','m1')">🗺️ Roadmap</button>
       </div>
 
       <!-- TAB: CONCEPTS -->
@@ -3124,7 +3133,7 @@
           <!-- SCORE -->
           <div class="quiz-q" id="qscore">
             <div class="score-display">
-              <div class="score-big" id="scoreBig">0/6</div>
+              <div class="score-big" id="scoreBig">0/9</div>
               <div id="scoreMsg" style="font-size:0.95rem;color:var(--text-dim);margin-bottom:1.5rem"></div>
               <button class="btn-primary" onclick="resetQuiz()">
                 <span class="lang-es-inline">↺ Reintentar</span>
@@ -3240,9 +3249,10 @@ let currentLang = 'es';
 
 function setLang(lang) {
   currentLang = lang;
-  const themeClass = [...document.body.classList].find(c => c.startsWith('theme-')) || '';
-  document.body.className = (themeClass ? themeClass + ' ' : '') + 'lang-active-' + lang;
-  // Update single toggle button: show the OTHER language
+  // Remove old lang classes, keep theme classes
+  document.body.classList.remove('lang-active-es', 'lang-active-en');
+  document.body.classList.add('lang-active-' + lang);
+  // Show the OTHER language on the button
   const btn = document.getElementById('langToggleBtn');
   if (btn) btn.textContent = lang === 'es' ? 'EN' : 'ES';
 }
@@ -3257,12 +3267,13 @@ const themeIcons = { default: '🌑', darker: '⬛', sepia: '📜' };
 
 function setTheme(theme) {
   currentTheme = theme;
-  const langClass = [...document.body.classList].find(c => c.startsWith('lang-active-')) || 'lang-active-es';
-  document.body.className = langClass + (theme !== 'default' ? ' theme-' + theme : '');
-  // Update dropdown button icon
+  // Remove old theme classes cleanly
+  document.body.classList.remove('theme-sepia', 'theme-darker');
+  if (theme !== 'default') document.body.classList.add('theme-' + theme);
+  // Update dropdown icon
   const iconEl = document.getElementById('themeIcon');
   if (iconEl) iconEl.textContent = themeIcons[theme];
-  // Update active state
+  // Update active options
   ['default','darker','sepia'].forEach(t => {
     const opt = document.getElementById('themeOpt-' + t);
     if (opt) opt.classList.toggle('active', t === theme);
@@ -3285,23 +3296,95 @@ document.addEventListener('click', function(e) {
   if (dd && !dd.contains(e.target)) closeThemeMenu();
 });
 
+// ── MOBILE CONTROLS INIT ──
+document.addEventListener('DOMContentLoaded', function() {
+
+  // FAB — single reliable tap handler (no double-fire)
+  const fab = document.getElementById('fabBtn');
+  if (fab) {
+    let tapped = false;
+    fab.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (tapped) return;
+      tapped = true;
+      setTimeout(() => { tapped = false; }, 400);
+      toggleSidebar();
+    }, { passive: false });
+    fab.addEventListener('click', function(e) {
+      // On desktop only — touchend handles mobile
+      if (!('ontouchstart' in window)) toggleSidebar();
+    });
+  }
+
+  // Lang button
+  const langBtn = document.getElementById('langToggleBtn');
+  if (langBtn) {
+    langBtn.textContent = 'EN';
+    langBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      toggleLang();
+    }, { passive: false });
+  }
+
+  // Theme dropdown button
+  const themeBtn = document.getElementById('themeDropBtn');
+  if (themeBtn) {
+    themeBtn.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleThemeMenu();
+    }, { passive: false });
+  }
+
+  // Theme options
+  document.querySelectorAll('.theme-option').forEach(opt => {
+    opt.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      const theme = this.id.replace('themeOpt-', '');
+      setTheme(theme);
+    }, { passive: false });
+  });
+
+  // Sidebar overlay close
+  const overlay = document.getElementById('sidebarOverlay');
+  if (overlay) {
+    overlay.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      closeSidebar();
+    }, { passive: false });
+  }
+
+  // Close sidebar when a module item is tapped on mobile
+  document.querySelectorAll('.module-item').forEach(item => {
+    item.addEventListener('touchend', function() {
+      setTimeout(closeSidebar, 150);
+    }, { passive: true });
+  });
+
+});
+
 // ── SIDEBAR MOBILE ──
 function toggleSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   const fab = document.getElementById('fabBtn');
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('visible');
-  fab.textContent = sidebar.classList.contains('open') ? '✕' : '☰';
+  if (!sidebar || !overlay || !fab) return;
+  const isOpen = sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('visible', !isOpen);
+  fab.innerHTML = !isOpen ? '&#x2715;' : '&#9776;';
+  fab.style.color = '#e2e8f0';
 }
 
 function closeSidebar() {
   const sidebar = document.querySelector('.sidebar');
   const overlay = document.getElementById('sidebarOverlay');
   const fab = document.getElementById('fabBtn');
+  if (!sidebar) return;
   sidebar.classList.remove('open');
-  overlay.classList.remove('visible');
-  fab.textContent = '☰';
+  if (overlay) overlay.classList.remove('visible');
+  if (fab) { fab.innerHTML = '&#9776;'; fab.style.color = '#e2e8f0'; }
 }
 
 // ── BILINGUAL ALERT ──
@@ -3317,12 +3400,12 @@ function showPage(id) {
 }
 
 // TAB NAV
-function showTab(tab, module) {
+function showTab(e, tab, module) {
   const allTabs = document.querySelectorAll(`#${module} .tab-content`);
   allTabs.forEach(t => t.classList.remove('active'));
   document.getElementById(`tab-${tab}-${module}`).classList.add('active');
   document.querySelectorAll(`#${module} .tab-btn`).forEach(b => b.classList.remove('active'));
-  event.target.classList.add('active');
+  (e.currentTarget || e.target).classList.add('active');
   if (tab === 'dashboard') setTimeout(initDashboardCharts, 100);
   if (tab === 'challenge') setTimeout(initChallengeCharts, 100);
 }
@@ -3862,13 +3945,41 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', e => {
   e.preventDefault();
   deferredPrompt = e;
-  const dismissed = localStorage.getItem('pwa-dismissed');
-  const recentlyDismissed = dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000;
-  if (window.innerWidth < 1024 && !recentlyDismissed) {
-    setTimeout(() => {
-      document.getElementById('pwaBanner').classList.add('visible');
-    }, 3000);
-  }
+  try {
+    const dismissed = localStorage.getItem('pwa-dismissed');
+    const recentlyDismissed = dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000;
+    if (!recentlyDismissed) {
+      setTimeout(() => {
+        const banner = document.getElementById('pwaBanner');
+        if (banner) banner.classList.add('visible');
+      }, 2000);
+    }
+  } catch(e) {}
+});
+
+// Fallback: show install hint on mobile if already installed criteria met
+window.addEventListener('load', () => {
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+    || window.navigator.standalone === true;
+  if (isStandalone) return; // already installed
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (!isMobile) return;
+  try {
+    const dismissed = localStorage.getItem('pwa-dismissed');
+    const recentlyDismissed = dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000;
+    if (!recentlyDismissed && !deferredPrompt) {
+      // iOS Safari doesn't support beforeinstallprompt — show manual hint
+      setTimeout(() => {
+        const banner = document.getElementById('pwaBanner');
+        const installBtn = document.querySelector('.pwa-install-btn');
+        if (banner && installBtn && /iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+          installBtn.innerHTML = '<span class="lang-es-inline">Safari: Compartir → Inicio</span><span class="lang-en-inline">Safari: Share → Home</span>';
+          installBtn.onclick = dismissPWA;
+          banner.classList.add('visible');
+        }
+      }, 3000);
+    }
+  } catch(e) {}
 });
 
 function installPWA() {
