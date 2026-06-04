@@ -59,6 +59,9 @@
   }
   body.theme-sepia::before { display: none; }
   body.theme-sepia .logo-icon { background: linear-gradient(135deg, #8b5e3c, #6d4c8e); }
+  body.theme-sepia .fab-menu { color: #2c1810; border-color: rgba(139,94,60,0.4); box-shadow: 0 4px 20px rgba(139,94,60,0.15); }
+  body.theme-sepia .lang-single-btn { color: var(--accent); border-color: rgba(139,94,60,0.35); background: rgba(139,94,60,0.08); }
+  body.theme-sepia .theme-dropdown-btn { border-color: rgba(139,94,60,0.25); }
 
   /* DARKER DARK THEME */
   body.theme-darker {
@@ -101,7 +104,7 @@
   header {
     position: sticky;
     top: 0;
-    z-index: 100;
+    z-index: 260;
     background: rgba(10,14,26,0.92);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
@@ -1181,15 +1184,18 @@
     height: 40px;
     border-radius: 12px;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0,212,255,0.4);
     cursor: pointer;
     align-items: center;
     justify-content: center;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
-    transition: background 0.2s;
+    font-size: 1.25rem;
+    line-height: 1;
+    color: #e2e8f0;
+    box-shadow: 0 4px 20px rgba(0,212,255,0.15);
+    transition: all 0.2s;
   }
-  .fab-menu:hover { background: var(--surface2); }
+  .fab-menu:hover { background: var(--surface2); border-color: var(--accent); }
+  .fab-menu:active { transform: scale(0.93); }
 
   /* OVERLAY */
   .sidebar-overlay {
@@ -1207,7 +1213,7 @@
   .theme-dropdown-btn {
     padding: 6px 10px;
     font-size: 0.85rem;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0,212,255,0.25);
     border-radius: 8px;
     background: var(--surface);
     color: var(--text);
@@ -1218,19 +1224,20 @@
     gap: 4px;
     white-space: nowrap;
   }
-  .theme-dropdown-btn:hover { border-color: var(--accent); }
+  .theme-dropdown-btn:hover { border-color: var(--accent); background: var(--surface2); }
+  .theme-dropdown-btn:active { transform: scale(0.95); }
   .theme-dropdown-menu {
     display: none;
     position: absolute;
     top: calc(100% + 6px);
     right: 0;
     background: var(--surface);
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0,212,255,0.25);
     border-radius: 10px;
     overflow: hidden;
-    min-width: 130px;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-    z-index: 200;
+    min-width: 140px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+    z-index: 9999;
   }
   .theme-dropdown-menu.open { display: block; }
   .theme-option {
@@ -1257,15 +1264,18 @@
     font-family: 'DM Sans', sans-serif;
     font-size: 0.82rem;
     font-weight: 700;
-    border: 1px solid var(--border);
+    border: 1px solid rgba(0,212,255,0.35);
     border-radius: 8px;
-    background: var(--surface);
+    background: rgba(0,212,255,0.08);
     color: var(--accent);
     cursor: pointer;
     transition: all 0.2s;
     letter-spacing: 0.05em;
+    min-width: 42px;
+    text-align: center;
   }
-  .lang-single-btn:hover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+  .lang-single-btn:hover { border-color: var(--accent); background: rgba(0,212,255,0.15); }
+  .lang-single-btn:active { transform: scale(0.95); }
 
   /* RESPONSIVE */
   @media (max-width: 768px) {
@@ -1276,7 +1286,7 @@
       left: -280px;
       height: 100vh;
       width: 260px;
-      z-index: 200;
+      z-index: 250;
       transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
       overflow-y: auto;
     }
@@ -1454,7 +1464,7 @@
 <body class="lang-active-es">
 
 <!-- FAB HAMBURGER -->
-<button class="fab-menu" onclick="toggleSidebar()" aria-label="Menu" id="fabBtn">☰</button>
+<button class="fab-menu" onclick="toggleSidebar()" aria-label="Menu" id="fabBtn" style="color:#e2e8f0;font-size:1.2rem;line-height:1;">☰</button>
 
 <!-- SIDEBAR OVERLAY -->
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
