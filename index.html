@@ -1476,7 +1476,7 @@
 <button class="fab-menu" aria-label="Menu" id="fabBtn">☰</button>
 
 <!-- SIDEBAR OVERLAY -->
-<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+<div class="sidebar-overlay" id="sidebarOverlay"></div>
 
 <!-- HEADER -->
 <header>
@@ -1489,19 +1489,19 @@
 
     <!-- THEME DROPDOWN -->
     <div class="theme-dropdown" id="themeDropdown">
-      <button class="theme-dropdown-btn" onclick="toggleThemeMenu()" id="themeDropBtn" style="-webkit-tap-highlight-color:transparent;">
+      <button class="theme-dropdown-btn" id="themeDropBtn" style="-webkit-tap-highlight-color:transparent;">
         <span id="themeIcon">🌑</span>
         <span style="font-size:0.7rem;color:var(--text-muted)">▾</span>
       </button>
       <div class="theme-dropdown-menu" id="themeMenu">
-        <button class="theme-option active" id="themeOpt-default" onclick="setTheme('default')">🌑 <span class="lang-es-inline">Oscuro</span><span class="lang-en-inline">Dark</span></button>
-        <button class="theme-option" id="themeOpt-darker" onclick="setTheme('darker')">⬛ <span class="lang-es-inline">Más oscuro</span><span class="lang-en-inline">Darker</span></button>
-        <button class="theme-option" id="themeOpt-sepia" onclick="setTheme('sepia')">📜 Sepia</button>
+        <button class="theme-option active" id="themeOpt-default">🌑 <span class="lang-es-inline">Oscuro</span><span class="lang-en-inline">Dark</span></button>
+        <button class="theme-option" id="themeOpt-darker">⬛ <span class="lang-es-inline">Más oscuro</span><span class="lang-en-inline">Darker</span></button>
+        <button class="theme-option" id="themeOpt-sepia">📜 Sepia</button>
       </div>
     </div>
 
     <!-- LANG SINGLE BUTTON -->
-    <button class="lang-single-btn" id="langToggleBtn" onclick="toggleLang()" style="-webkit-tap-highlight-color:transparent;">EN</button>
+    <button class="lang-single-btn" id="langToggleBtn" style="-webkit-tap-highlight-color:transparent;touch-action:manipulation;">EN</button>
   </div>
 </header>
 
@@ -3299,64 +3299,56 @@ document.addEventListener('click', function(e) {
 // ── MOBILE CONTROLS INIT ──
 document.addEventListener('DOMContentLoaded', function() {
 
-  // FAB — single reliable tap handler (no double-fire)
-  const fab = document.getElementById('fabBtn');
-  if (fab) {
-    let tapped = false;
-    fab.addEventListener('touchend', function(e) {
+  // Universal tap handler — works on BOTH touch and click without double-fire
+  function onTap(el, fn) {
+    if (!el) return;
+    let active = false;
+    el.addEventListener('touchend', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      if (tapped) return;
-      tapped = true;
-      setTimeout(() => { tapped = false; }, 400);
-      toggleSidebar();
+      if (active) return;
+      active = true;
+      setTimeout(function(){ active = false; }, 350);
+      fn.call(el, e);
     }, { passive: false });
-    fab.addEventListener('click', function(e) {
-      // On desktop only — touchend handles mobile
-      if (!('ontouchstart' in window)) toggleSidebar();
+    el.addEventListener('click', function(e) {
+      if (active) return; // already handled by touchend
+      fn.call(el, e);
     });
   }
 
+  // FAB
+  onTap(document.getElementById('fabBtn'), function() {
+    toggleSidebar();
+  });
+
   // Lang button
   const langBtn = document.getElementById('langToggleBtn');
-  if (langBtn) {
-    langBtn.textContent = 'EN';
-    langBtn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      toggleLang();
-    }, { passive: false });
-  }
+  if (langBtn) langBtn.textContent = 'EN';
+  onTap(langBtn, function() {
+    toggleLang();
+  });
 
-  // Theme dropdown button
-  const themeBtn = document.getElementById('themeDropBtn');
-  if (themeBtn) {
-    themeBtn.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      e.stopPropagation();
-      toggleThemeMenu();
-    }, { passive: false });
-  }
+  // Theme dropdown trigger
+  onTap(document.getElementById('themeDropBtn'), function() {
+    toggleThemeMenu();
+  });
 
-  // Theme options
-  document.querySelectorAll('.theme-option').forEach(opt => {
-    opt.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      const theme = this.id.replace('themeOpt-', '');
+  // Theme options — each one
+  document.querySelectorAll('.theme-option').forEach(function(opt) {
+    onTap(opt, function() {
+      var theme = this.id.replace('themeOpt-', '');
       setTheme(theme);
-    }, { passive: false });
+    });
   });
 
   // Sidebar overlay close
-  const overlay = document.getElementById('sidebarOverlay');
-  if (overlay) {
-    overlay.addEventListener('touchend', function(e) {
-      e.preventDefault();
-      closeSidebar();
-    }, { passive: false });
-  }
+  onTap(document.getElementById('sidebarOverlay'), function() {
+    closeSidebar();
+  });
 
-  // Close sidebar when a module item is tapped on mobile
-  document.querySelectorAll('.module-item').forEach(item => {
+  // Module items close sidebar on mobile
+  document.querySelectorAll('.module-item').forEach(function(item) {
     item.addEventListener('touchend', function() {
       setTimeout(closeSidebar, 150);
     }, { passive: true });
@@ -3835,7 +3827,7 @@ function clickStep(id, isWrong) {
   } else {
     const hint = document.getElementById('c2-hint');
     hint.classList.add('visible');
-    hint.innerHTML = '✅ <span class="lang-es-inline">Correcto. El paso de filtro por región está en posición incorrecta — usa una columna que aún no ha sido renombrada.</span><span class="lang-en-inline">Correct. The region filter step is in the wrong position — it references a column that hasn't been renamed yet.</span>';
+    hint.innerHTML = '✅ <span class="lang-es-inline">Correcto. El paso de filtro por región está en posición incorrecta — usa una columna que aún no ha sido renombrada.</span><span class="lang-en-inline">Correct. The region filter step is in the wrong position — it references a column that hasn\'t been renamed yet.</span>';
     hint.style.background = 'rgba(16,185,129,0.08)';
     hint.style.borderColor = 'rgba(16,185,129,0.2)';
     hint.style.color = 'var(--success)';
@@ -3896,16 +3888,16 @@ const c4feedback = {
     wrong: { es: '❌ Incorrecto. 200MB, actualización diaria, sin necesidad de real-time → Import es la elección óptima: máxima velocidad, DAX completo, sin complejidad adicional.', en: '❌ Incorrect. 200MB, daily refresh, no real-time need → Import is the optimal choice: maximum speed, full DAX, no added complexity.' }
   },
   2: {
-    correct: { es: '✅ DirectQuery. 2TB supera el límite de Import (~1GB). Datos en tiempo real al minuto. Sin Fabric → DirectLake no aplica. DirectQuery es la única opción válida.', en: '✅ DirectQuery. 2TB exceeds Import limit (~1GB). Real-time data by the minute. No Fabric → DirectLake doesn't apply. DirectQuery is the only valid option.' },
+    correct: { es: '✅ DirectQuery. 2TB supera el límite de Import (~1GB). Datos en tiempo real al minuto. Sin Fabric → DirectLake no aplica. DirectQuery es la única opción válida.', en: '✅ DirectQuery. 2TB exceeds Import limit (~1GB). Real-time data by the minute. No Fabric → DirectLake doesn\'t apply. DirectQuery is the only valid option.' },
     wrong: { es: '❌ Incorrecto. Import no puede con 2TB ni con datos al minuto. DirectLake requiere Fabric (no disponible). Solo DirectQuery conecta a la fuente en tiempo real sin límite de tamaño.', en: '❌ Incorrect. Import cannot handle 2TB or per-minute data. DirectLake requires Fabric (not available). Only DirectQuery connects to the source in real-time without size limits.' }
   },
   3: {
     correct: { es: '✅ DirectLake. Datos en OneLake (Fabric disponible), 500GB (demasiado para Import), velocidad necesaria. DirectLake es exactamente para este caso: velocidad de Import + datos actualizados en Fabric.', en: '✅ DirectLake. Data in OneLake (Fabric available), 500GB (too large for Import), speed required. DirectLake is exactly for this case: Import speed + current data in Fabric.' },
-    wrong: { es: '❌ Incorrecto. Tienen Microsoft Fabric con datos en OneLake → DirectLake es la respuesta perfecta. Import no puede con 500GB. DirectQuery sería lento. DirectLake combina lo mejor de ambos.', en: '❌ Incorrect. They have Microsoft Fabric with data in OneLake → DirectLake is the perfect answer. Import can't handle 500GB. DirectQuery would be slow. DirectLake combines the best of both.' }
+    wrong: { es: '❌ Incorrecto. Tienen Microsoft Fabric con datos en OneLake → DirectLake es la respuesta perfecta. Import no puede con 500GB. DirectQuery sería lento. DirectLake combina lo mejor de ambos.', en: '❌ Incorrect. They have Microsoft Fabric with data in OneLake → DirectLake is the perfect answer. Import can\'t handle 500GB. DirectQuery would be slow. DirectLake combines the best of both.' }
   },
   4: {
     correct: { es: '✅ Import. 50MB, actualización semanal, fuente Excel → Import es la elección obvia. Máxima velocidad, DAX completo, tamaño mínimo. Import siempre es la primera opción cuando el tamaño y la frecuencia lo permiten.', en: '✅ Import. 50MB, weekly refresh, Excel source → Import is the obvious choice. Maximum speed, full DAX, minimal size. Import is always the first option when size and frequency allow it.' },
-    wrong: { es: '❌ Incorrecto. 50MB de Excel con refresh semanal no necesita DirectQuery ni DirectLake. Import es perfecto: tamaño pequeño, sin necesidad real-time, máxima performance para análisis.', en: '❌ Incorrect. 50MB Excel with weekly refresh doesn't need DirectQuery or DirectLake. Import is perfect: small size, no real-time need, maximum performance for analysis.' }
+    wrong: { es: '❌ Incorrecto. 50MB de Excel con refresh semanal no necesita DirectQuery ni DirectLake. Import es perfecto: tamaño pequeño, sin necesidad real-time, máxima performance para análisis.', en: '❌ Incorrect. 50MB Excel with weekly refresh doesn\'t need DirectQuery or DirectLake. Import is perfect: small size, no real-time need, maximum performance for analysis.' }
   }
 };
 
@@ -3933,9 +3925,13 @@ function answerC4(scenarioNum, answer, isCorrect) {
 // ── PWA: SERVICE WORKER ──
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+    // Only register SW when running from a real host (not preview/localhost without sw.js)
+    const isGitHubPages = location.hostname.includes('github.io');
+    const isLocalhost = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!isGitHubPages && !isLocalhost) return; // skip in preview environments
     navigator.serviceWorker.register('sw.js')
       .then(reg => console.log('SW registered:', reg.scope))
-      .catch(err => console.log('SW failed:', err));
+      .catch(() => {}); // fail silently — sw.js may not exist in all environments
   });
 }
 
@@ -3968,7 +3964,7 @@ window.addEventListener('load', () => {
     const dismissed = localStorage.getItem('pwa-dismissed');
     const recentlyDismissed = dismissed && Date.now() - parseInt(dismissed) < 7 * 24 * 60 * 60 * 1000;
     if (!recentlyDismissed && !deferredPrompt) {
-      // iOS Safari doesn't support beforeinstallprompt — show manual hint
+      // iOS Safari does not support beforeinstallprompt — show manual hint
       setTimeout(() => {
         const banner = document.getElementById('pwaBanner');
         const installBtn = document.querySelector('.pwa-install-btn');
