@@ -1153,14 +1153,129 @@
 
   .pulse { animation: pulse 2s infinite; }
 
+  /* FAB HAMBURGER */
+  .fab-menu {
+    display: none;
+    position: fixed;
+    top: 14px;
+    left: 14px;
+    z-index: 300;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    transition: background 0.2s;
+  }
+  .fab-menu:hover { background: var(--surface2); }
+
+  /* OVERLAY */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(2px);
+    z-index: 199;
+  }
+  .sidebar-overlay.visible { display: block; }
+
+  /* THEME DROPDOWN */
+  .theme-dropdown { position: relative; }
+  .theme-dropdown-btn {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  .theme-dropdown-btn:hover { border-color: var(--accent); }
+  .theme-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    min-width: 130px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+    z-index: 200;
+  }
+  .theme-dropdown-menu.open { display: block; }
+  .theme-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 14px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: transparent;
+    width: 100%;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    text-align: left;
+  }
+  .theme-option:hover { background: var(--surface2); }
+  .theme-option.active { color: var(--accent); font-weight: 600; }
+
+  /* LANG SINGLE BUTTON */
+  .lang-single-btn {
+    padding: 6px 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 700;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--accent);
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .lang-single-btn:hover { border-color: var(--accent); background: rgba(0,212,255,0.08); }
+
   /* RESPONSIVE */
   @media (max-width: 768px) {
     .app-layout { grid-template-columns: 1fr; }
-    .sidebar { display: none; }
+    .sidebar {
+      position: fixed;
+      top: 0;
+      left: -280px;
+      height: 100vh;
+      width: 260px;
+      z-index: 200;
+      transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+      overflow-y: auto;
+    }
+    .sidebar.open { left: 0; }
+    .fab-menu { display: flex; }
+    .logo { padding-left: 48px; }
     .kpi-row { grid-template-columns: repeat(2,1fr); }
     .charts-grid { grid-template-columns: 1fr; }
     .error-kpi-row { grid-template-columns: repeat(2,1fr); }
     .error-charts-row { grid-template-columns: 1fr; }
+    .progress-pill { display: none; }
+    .content { padding: 1rem; }
+    .tab-nav { overflow-x: auto; padding-bottom: 2px; }
+    .tab-btn { font-size: 0.78rem; padding: 7px 12px; white-space: nowrap; }
+    .module-title { font-size: 1.3rem; }
+    .concept-grid { grid-template-columns: 1fr; }
   }
 
   .lang-es, .lang-en { display: none; }
@@ -1172,10 +1287,84 @@
   .lang-active-en .lang-es-inline { display: none; }
 
   span.lang-es-inline, span.lang-en-inline { display: inline; }
+
+  /* QUERY STEPS */
+  .query-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 12px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .query-step:hover { border-color: rgba(0,212,255,0.3); background: rgba(0,212,255,0.04); }
+  .query-step.step-wrong { background: rgba(239,68,68,0.08); border-color: var(--danger); }
+  .query-step.step-correct { background: rgba(16,185,129,0.08); border-color: var(--success); }
+  .query-step.step-not-this { opacity: 0.4; pointer-events: none; }
+  .step-num {
+    width: 24px; height: 24px; border-radius: 6px;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700; color: var(--text-muted);
+    flex-shrink: 0;
+  }
+  .step-name { font-size: 0.82rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+  .step-desc { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* C3 OPTIONS */
+  .c3-opt, .c4-opt {
+    padding: 7px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-dim);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .c3-opt:hover:not(:disabled), .c4-opt:hover:not(:disabled) {
+    border-color: var(--accent); color: var(--accent);
+    background: rgba(0,212,255,0.06);
+  }
+  .c3-opt.correct, .c4-opt.correct { background: rgba(16,185,129,0.12); border-color: var(--success); color: var(--success); }
+  .c3-opt.wrong, .c4-opt.wrong { background: rgba(239,68,68,0.08); border-color: var(--danger); color: var(--danger); }
+  .c3-opt:disabled, .c4-opt:disabled { cursor: default; }
+
+  /* C4 SCENARIO */
+  .c4-scenario {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    transition: border-color 0.2s;
+  }
+  .c4-scenario.answered-correct { border-color: rgba(16,185,129,0.3); }
+  .c4-scenario.answered-wrong { border-color: rgba(239,68,68,0.3); }
+  .c4-scenario-header { display: flex; gap: 10px; align-items: flex-start; margin-bottom: 0.75rem; }
+  .c4-num {
+    width: 26px; height: 26px; border-radius: 50%;
+    background: rgba(0,212,255,0.1); border: 1px solid rgba(0,212,255,0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: var(--accent);
+    flex-shrink: 0;
+  }
+  .c4-options { display: flex; gap: 6px; flex-wrap: wrap; }
+
 </style>
 </head>
 
 <body class="lang-active-es">
+
+<!-- FAB HAMBURGER -->
+<button class="fab-menu" onclick="toggleSidebar()" aria-label="Menu" id="fabBtn">☰</button>
+
+<!-- SIDEBAR OVERLAY -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- HEADER -->
 <header>
@@ -1185,15 +1374,22 @@
   </div>
   <div class="header-right">
     <div class="progress-pill"><span class="lang-es-inline">Módulo</span><span class="lang-en-inline">Module</span> <span>1</span> <span class="lang-es-inline">de</span><span class="lang-en-inline">of</span> 6 · PL-300</div>
-    <div class="lang-toggle">
-      <button class="theme-btn active" onclick="setTheme('default',this)" title="Default">🌑</button>
-      <button class="theme-btn" onclick="setTheme('darker',this)" title="Darker">⬛</button>
-      <button class="theme-btn" onclick="setTheme('sepia',this)" title="Sepia">📜</button>
+
+    <!-- THEME DROPDOWN -->
+    <div class="theme-dropdown" id="themeDropdown">
+      <button class="theme-dropdown-btn" onclick="toggleThemeMenu()" id="themeDropBtn">
+        <span id="themeIcon">🌑</span>
+        <span style="font-size:0.7rem;color:var(--text-muted)">▾</span>
+      </button>
+      <div class="theme-dropdown-menu" id="themeMenu">
+        <button class="theme-option active" id="themeOpt-default" onclick="setTheme('default')">🌑 <span class="lang-es-inline">Oscuro</span><span class="lang-en-inline">Dark</span></button>
+        <button class="theme-option" id="themeOpt-darker" onclick="setTheme('darker')">⬛ <span class="lang-es-inline">Más oscuro</span><span class="lang-en-inline">Darker</span></button>
+        <button class="theme-option" id="themeOpt-sepia" onclick="setTheme('sepia')">📜 Sepia</button>
+      </div>
     </div>
-    <div class="lang-toggle">
-      <button class="lang-btn active" onclick="setLang('es')">ES</button>
-      <button class="lang-btn" onclick="setLang('en')">EN</button>
-    </div>
+
+    <!-- LANG SINGLE BUTTON -->
+    <button class="lang-single-btn" id="langToggleBtn" onclick="toggleLang()">EN</button>
   </div>
 </header>
 
@@ -2048,7 +2244,6 @@
               </div>
               <div class="challenge-desc lang-es">Este dashboard contiene 4 errores deliberados de diseño y datos. Haz clic en el elemento que crees que está mal.</div>
               <div class="challenge-desc lang-en">This dashboard contains 4 deliberate design and data errors. Click on the element you think is wrong.</div>
-              <div class="challenge-desc lang-en">This dashboard contains 4 deliberate design and data errors. Click on the element you think is wrong.</div>
             </div>
             <div class="errors-found" id="errorsFoundDisplay">
               <span class="lang-es-inline">Encontrados:</span>
@@ -2178,6 +2373,351 @@
 
           </div>
         </div>
+
+        <!-- ══ RETO 2: DIAGNÓSTICO DE QUERY ══ -->
+        <div class="challenge-panel" style="margin-top:1rem;">
+          <div class="challenge-header" style="cursor:pointer;" onclick="toggleChallenge('c2')">
+            <div>
+              <div class="challenge-title">🔍
+                <span class="lang-es-inline">Reto 2 — Diagnóstico de Query</span>
+                <span class="lang-en-inline">Challenge 2 — Query Diagnosis</span>
+              </div>
+              <div class="challenge-desc lang-es">Identifica el paso en el orden incorrecto en esta secuencia de Applied Steps.</div>
+              <div class="challenge-desc lang-en">Identify the step in the wrong order in this Applied Steps sequence.</div>
+            </div>
+            <div id="c2-chevron" style="font-size:1.1rem;color:var(--text-muted);transition:transform 0.3s;">▼</div>
+          </div>
+          <div id="c2-body" style="display:none;">
+            <div class="challenge-body">
+              <div class="story-panel" style="margin-bottom:1rem;">
+                <div class="story-panel-header"><div class="story-tag">CONTEXTO</div></div>
+                <div style="font-size:0.85rem;color:var(--text-dim);" class="lang-es">
+                  Estás limpiando una tabla de <strong>órdenes de venta</strong> con las siguientes transformaciones necesarias:<br>
+                  filtrar filas vacías, convertir tipos, renombrar columnas, y filtrar por región.
+                </div>
+                <div style="font-size:0.85rem;color:var(--text-dim);" class="lang-en">
+                  You are cleaning a <strong>sales orders</strong> table with these required transformations:<br>
+                  filter empty rows, convert types, rename columns, and filter by region.
+                </div>
+              </div>
+
+              <div style="font-size:0.82rem;font-weight:600;color:var(--text-muted);margin-bottom:0.75rem;">
+                <span class="lang-es-inline">Haz clic en el paso que está en la posición incorrecta:</span>
+                <span class="lang-en-inline">Click the step that is in the wrong position:</span>
+              </div>
+
+              <div id="c2-steps" style="display:flex;flex-direction:column;gap:6px;">
+                <div class="query-step" id="qs1" onclick="clickStep('qs1',false)" data-step="1">
+                  <span class="step-num">1</span>
+                  <div>
+                    <div class="step-name">Source</div>
+                    <div class="step-desc lang-es">Conectar a la fuente de datos SQL</div>
+                    <div class="step-desc lang-en">Connect to SQL data source</div>
+                  </div>
+                </div>
+                <div class="query-step" id="qs2" onclick="clickStep('qs2',false)" data-step="2">
+                  <span class="step-num">2</span>
+                  <div>
+                    <div class="step-name">Removed Empty Rows</div>
+                    <div class="step-desc lang-es">Eliminar filas donde OrderID es null</div>
+                    <div class="step-desc lang-en">Remove rows where OrderID is null</div>
+                  </div>
+                </div>
+                <div class="query-step" id="qs3" onclick="clickStep('qs3',true)" data-step="3">
+                  <span class="step-num">3</span>
+                  <div>
+                    <div class="step-name">Filtered Rows (Region = "North")</div>
+                    <div class="step-desc lang-es">Filtrar solo región Norte — <em style="color:var(--accent2)">¿debería estar aquí?</em></div>
+                    <div class="step-desc lang-en">Filter only North region — <em style="color:var(--accent2)">should this be here?</em></div>
+                  </div>
+                </div>
+                <div class="query-step" id="qs4" onclick="clickStep('qs4',false)" data-step="4">
+                  <span class="step-num">4</span>
+                  <div>
+                    <div class="step-name">Changed Type</div>
+                    <div class="step-desc lang-es">Convertir OrderDate de Text a Date, Amount de Text a Decimal</div>
+                    <div class="step-desc lang-en">Convert OrderDate from Text to Date, Amount from Text to Decimal</div>
+                  </div>
+                </div>
+                <div class="query-step" id="qs5" onclick="clickStep('qs5',false)" data-step="5">
+                  <span class="step-num">5</span>
+                  <div>
+                    <div class="step-name">Renamed Columns</div>
+                    <div class="step-desc lang-es">Renombrar: order_id → OrderID, amt → Amount, reg → Region</div>
+                    <div class="step-desc lang-en">Rename: order_id → OrderID, amt → Amount, reg → Region</div>
+                  </div>
+                </div>
+                <div class="query-step" id="qs6" onclick="clickStep('qs6',false)" data-step="6">
+                  <span class="step-num">6</span>
+                  <div>
+                    <div class="step-name">Added Custom Column</div>
+                    <div class="step-desc lang-es">Crear columna: SalesCategory = if Amount > 1000 then "High" else "Low"</div>
+                    <div class="step-desc lang-en">Create column: SalesCategory = if Amount > 1000 then "High" else "Low"</div>
+                  </div>
+                </div>
+              </div>
+
+              <div id="c2-hint" class="hint-box" style="margin-top:0.75rem;">
+                💡 <span class="lang-es-inline">Piensa: ¿en qué momento tiene sentido filtrar por región? ¿Antes o después de que las columnas tengan el nombre y tipo correcto? Y si filtras antes de cambiar tipos, ¿qué pasa con columnas que todavía son Text?</span>
+                <span class="lang-en-inline">Think: when does it make sense to filter by region? Before or after columns have the correct name and type? And if you filter before changing types, what happens to columns that are still Text?</span>
+              </div>
+
+              <div id="c2-solution" class="solution-panel" style="margin-top:0.75rem;">
+                <div class="solution-header">✅
+                  <span class="lang-es-inline">Solución — Paso 3 está en posición incorrecta</span>
+                  <span class="lang-en-inline">Solution — Step 3 is in the wrong position</span>
+                </div>
+                <div class="error-item">
+                  <div class="error-num">!</div>
+                  <div>
+                    <div class="error-description lang-es"><strong>Filtered Rows (Region) en posición 3 es incorrecto.</strong> El filtro por región usa la columna "Region" — pero en el paso 5 esa columna se llama "reg" (aún no ha sido renombrada). Power Query filtraría sobre un nombre que no existe todavía, generando un error o resultado vacío.</div>
+                    <div class="error-description lang-en"><strong>Filtered Rows (Region) at position 3 is incorrect.</strong> The region filter uses the "Region" column — but at step 5 that column is still called "reg" (not yet renamed). Power Query would filter on a name that doesn't exist yet, generating an error or empty result.</div>
+                    <div class="error-rule lang-es">Orden correcto: <em>1. Source → 2. Remove Nulls → 3. Changed Type → 4. Renamed Columns → <strong style="color:var(--success)">5. Filtered Rows</strong> → 6. Add Column</em></div>
+                    <div class="error-rule lang-en">Correct order: <em>1. Source → 2. Remove Nulls → 3. Changed Type → 4. Renamed Columns → <strong style="color:var(--success)">5. Filtered Rows</strong> → 6. Add Column</em></div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display:flex;gap:8px;margin-top:0.75rem;flex-wrap:wrap;">
+                <button class="btn-danger" onclick="document.getElementById('c2-hint').classList.toggle('visible')">
+                  💡 <span class="lang-es-inline">Pista</span><span class="lang-en-inline">Hint</span>
+                </button>
+                <button class="btn-secondary" onclick="document.getElementById('c2-solution').classList.add('visible')">
+                  👁 <span class="lang-es-inline">Ver solución</span><span class="lang-en-inline">Show solution</span>
+                </button>
+                <button class="btn-secondary" onclick="resetC2()">
+                  ↺ <span class="lang-es-inline">Reiniciar</span><span class="lang-en-inline">Reset</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ RETO 3: CLASIFICA LA TRANSFORMACIÓN ══ -->
+        <div class="challenge-panel" style="margin-top:1rem;">
+          <div class="challenge-header" style="cursor:pointer;" onclick="toggleChallenge('c3')">
+            <div>
+              <div class="challenge-title">🔄
+                <span class="lang-es-inline">Reto 3 — Clasifica la Transformación</span>
+                <span class="lang-en-inline">Challenge 3 — Classify the Transformation</span>
+              </div>
+              <div class="challenge-desc lang-es">Se muestra un dataset antes y después. Selecciona qué operación Power Query produjo ese resultado.</div>
+              <div class="challenge-desc lang-en">A dataset is shown before and after. Select which Power Query operation produced that result.</div>
+            </div>
+            <div id="c3-chevron" style="font-size:1.1rem;color:var(--text-muted);transition:transform 0.3s;">▼</div>
+          </div>
+          <div id="c3-body" style="display:none;">
+            <div class="challenge-body">
+              <div id="c3-score" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">
+                <span class="lang-es-inline">Correctas: </span><span class="lang-en-inline">Correct: </span>
+                <span id="c3correct">0</span>/3
+              </div>
+
+              <!-- Case 1 -->
+              <div class="c3-case" id="c3case1" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:0.75rem;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">Caso 1 de 3</span><span class="lang-en-inline">Case 1 of 3</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.75rem;align-items:center;margin-bottom:0.75rem;">
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--accent);font-weight:700;margin-bottom:4px;">BEFORE</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;text-align:left;border:1px solid var(--border);">Product</th><th style="padding:4px 8px;border:1px solid var(--border);">Jan</th><th style="padding:4px 8px;border:1px solid var(--border);">Feb</th><th style="padding:4px 8px;border:1px solid var(--border);">Mar</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">Laptop</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">840</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">910</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">760</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">Monitor</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">300</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">420</td><td style="padding:4px 8px;border:1px solid var(--border);text-align:center;">380</td></tr>
+                    </table>
+                  </div>
+                  <div style="font-size:1.5rem;color:var(--accent);">→</div>
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--success);font-weight:700;margin-bottom:4px;">AFTER</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;text-align:left;border:1px solid var(--border);">Product</th><th style="padding:4px 8px;border:1px solid var(--border);">Month</th><th style="padding:4px 8px;border:1px solid var(--border);">Sales</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">Laptop</td><td style="padding:4px 8px;border:1px solid var(--border);">Jan</td><td style="padding:4px 8px;border:1px solid var(--border);">840</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">Laptop</td><td style="padding:4px 8px;border:1px solid var(--border);">Feb</td><td style="padding:4px 8px;border:1px solid var(--border);">910</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);" colspan="3" style="color:var(--text-muted);font-size:0.7rem;">…4 more rows</td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="c3-options" style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <button class="c3-opt" onclick="answerC3(1,'Pivot',false)">Pivot</button>
+                  <button class="c3-opt" onclick="answerC3(1,'Unpivot',true)">Unpivot</button>
+                  <button class="c3-opt" onclick="answerC3(1,'GroupBy',false)">Group By</button>
+                  <button class="c3-opt" onclick="answerC3(1,'Merge',false)">Merge</button>
+                  <button class="c3-opt" onclick="answerC3(1,'Append',false)">Append</button>
+                </div>
+                <div id="c3-fb1" style="display:none;margin-top:8px;font-size:0.82rem;padding:8px;border-radius:6px;"></div>
+              </div>
+
+              <!-- Case 2 -->
+              <div class="c3-case" id="c3case2" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:0.75rem;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">Caso 2 de 3</span><span class="lang-en-inline">Case 2 of 3</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.75rem;align-items:start;margin-bottom:0.75rem;">
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--accent);font-weight:700;margin-bottom:4px;">BEFORE (2 tables)</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;margin-bottom:4px;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;border:1px solid var(--border);">OrderID</th><th style="padding:4px 8px;border:1px solid var(--border);">ProdID</th><th style="padding:4px 8px;border:1px solid var(--border);">Amt</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">1001</td><td style="padding:4px 8px;border:1px solid var(--border);">P01</td><td style="padding:4px 8px;border:1px solid var(--border);">$450</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">1002</td><td style="padding:4px 8px;border:1px solid var(--border);">P02</td><td style="padding:4px 8px;border:1px solid var(--border);">$820</td></tr>
+                    </table>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;border:1px solid var(--border);">ProdID</th><th style="padding:4px 8px;border:1px solid var(--border);">ProdName</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">P01</td><td style="padding:4px 8px;border:1px solid var(--border);">Laptop Pro</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">P02</td><td style="padding:4px 8px;border:1px solid var(--border);">Monitor 4K</td></tr>
+                    </table>
+                  </div>
+                  <div style="font-size:1.5rem;color:var(--accent);align-self:center;">→</div>
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--success);font-weight:700;margin-bottom:4px;">AFTER</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;border:1px solid var(--border);">OrderID</th><th style="padding:4px 8px;border:1px solid var(--border);">ProdName</th><th style="padding:4px 8px;border:1px solid var(--border);">Amt</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">1001</td><td style="padding:4px 8px;border:1px solid var(--border);">Laptop Pro</td><td style="padding:4px 8px;border:1px solid var(--border);">$450</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">1002</td><td style="padding:4px 8px;border:1px solid var(--border);">Monitor 4K</td><td style="padding:4px 8px;border:1px solid var(--border);">$820</td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="c3-options" style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <button class="c3-opt" onclick="answerC3(2,'Pivot',false)">Pivot</button>
+                  <button class="c3-opt" onclick="answerC3(2,'Unpivot',false)">Unpivot</button>
+                  <button class="c3-opt" onclick="answerC3(2,'GroupBy',false)">Group By</button>
+                  <button class="c3-opt" onclick="answerC3(2,'Merge',true)">Merge</button>
+                  <button class="c3-opt" onclick="answerC3(2,'Append',false)">Append</button>
+                </div>
+                <div id="c3-fb2" style="display:none;margin-top:8px;font-size:0.82rem;padding:8px;border-radius:6px;"></div>
+              </div>
+
+              <!-- Case 3 -->
+              <div class="c3-case" id="c3case3" style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:1rem;margin-bottom:0.75rem;">
+                <div style="font-size:0.78rem;font-weight:700;color:var(--text-muted);margin-bottom:0.75rem;text-transform:uppercase;letter-spacing:0.06em;">
+                  <span class="lang-es-inline">Caso 3 de 3</span><span class="lang-en-inline">Case 3 of 3</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.75rem;align-items:start;margin-bottom:0.75rem;">
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--accent);font-weight:700;margin-bottom:4px;">BEFORE</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;border:1px solid var(--border);">Region</th><th style="padding:4px 8px;border:1px solid var(--border);">OrderID</th><th style="padding:4px 8px;border:1px solid var(--border);">Amount</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">North</td><td style="padding:4px 8px;border:1px solid var(--border);">1001</td><td style="padding:4px 8px;border:1px solid var(--border);">450</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">North</td><td style="padding:4px 8px;border:1px solid var(--border);">1002</td><td style="padding:4px 8px;border:1px solid var(--border);">820</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">South</td><td style="padding:4px 8px;border:1px solid var(--border);">1003</td><td style="padding:4px 8px;border:1px solid var(--border);">330</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">South</td><td style="padding:4px 8px;border:1px solid var(--border);">1004</td><td style="padding:4px 8px;border:1px solid var(--border);">610</td></tr>
+                    </table>
+                  </div>
+                  <div style="font-size:1.5rem;color:var(--accent);align-self:center;">→</div>
+                  <div>
+                    <div style="font-size:0.7rem;color:var(--success);font-weight:700;margin-bottom:4px;">AFTER</div>
+                    <table style="width:100%;font-size:0.75rem;border-collapse:collapse;">
+                      <tr style="background:var(--surface);"><th style="padding:4px 8px;border:1px solid var(--border);">Region</th><th style="padding:4px 8px;border:1px solid var(--border);">Total Sales</th><th style="padding:4px 8px;border:1px solid var(--border);">Orders</th></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">North</td><td style="padding:4px 8px;border:1px solid var(--border);">$1,270</td><td style="padding:4px 8px;border:1px solid var(--border);">2</td></tr>
+                      <tr><td style="padding:4px 8px;border:1px solid var(--border);">South</td><td style="padding:4px 8px;border:1px solid var(--border);">$940</td><td style="padding:4px 8px;border:1px solid var(--border);">2</td></tr>
+                    </table>
+                  </div>
+                </div>
+                <div class="c3-options" style="display:flex;flex-wrap:wrap;gap:6px;">
+                  <button class="c3-opt" onclick="answerC3(3,'Pivot',false)">Pivot</button>
+                  <button class="c3-opt" onclick="answerC3(3,'Unpivot',false)">Unpivot</button>
+                  <button class="c3-opt" onclick="answerC3(3,'GroupBy',true)">Group By</button>
+                  <button class="c3-opt" onclick="answerC3(3,'Merge',false)">Merge</button>
+                  <button class="c3-opt" onclick="answerC3(3,'Append',false)">Append</button>
+                </div>
+                <div id="c3-fb3" style="display:none;margin-top:8px;font-size:0.82rem;padding:8px;border-radius:6px;"></div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- ══ RETO 4: ELIGE EL MODO DE CONEXIÓN ══ -->
+        <div class="challenge-panel" style="margin-top:1rem;">
+          <div class="challenge-header" style="cursor:pointer;" onclick="toggleChallenge('c4')">
+            <div>
+              <div class="challenge-title">⚡
+                <span class="lang-es-inline">Reto 4 — Elige el Modo de Conexión</span>
+                <span class="lang-en-inline">Challenge 4 — Choose the Connection Mode</span>
+              </div>
+              <div class="challenge-desc lang-es">4 escenarios de negocio. Para cada uno elige: Import, DirectQuery o DirectLake.</div>
+              <div class="challenge-desc lang-en">4 business scenarios. For each one choose: Import, DirectQuery or DirectLake.</div>
+            </div>
+            <div id="c4-chevron" style="font-size:1.1rem;color:var(--text-muted);transition:transform 0.3s;">▼</div>
+          </div>
+          <div id="c4-body" style="display:none;">
+            <div class="challenge-body">
+              <div id="c4-score" style="font-size:0.82rem;color:var(--text-muted);margin-bottom:1rem;">
+                <span class="lang-es-inline">Correctas: </span><span class="lang-en-inline">Correct: </span>
+                <span id="c4correct">0</span>/4
+              </div>
+
+              <div style="display:flex;flex-direction:column;gap:0.75rem;" id="c4-scenarios">
+
+                <div class="c4-scenario" id="c4s1">
+                  <div class="c4-scenario-header">
+                    <span class="c4-num">1</span>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-es">Reporte financiero mensual para el CFO. Dataset de 200MB con transacciones del año fiscal. Se actualiza una vez al día a las 6am.</div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-en">Monthly financial report for the CFO. 200MB dataset with fiscal year transactions. Updated once a day at 6am.</div>
+                    </div>
+                  </div>
+                  <div class="c4-options">
+                    <button class="c4-opt" onclick="answerC4(1,'Import',true)">Import</button>
+                    <button class="c4-opt" onclick="answerC4(1,'DirectQuery',false)">DirectQuery</button>
+                    <button class="c4-opt" onclick="answerC4(1,'DirectLake',false)">DirectLake</button>
+                  </div>
+                  <div id="c4-fb1" style="display:none;margin-top:6px;font-size:0.8rem;padding:8px;border-radius:6px;"></div>
+                </div>
+
+                <div class="c4-scenario" id="c4s2">
+                  <div class="c4-scenario-header">
+                    <span class="c4-num">2</span>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-es">Dashboard de operaciones de e-commerce. 2TB de datos de pedidos en tiempo real. Los gerentes necesitan ver el estado de órdenes al minuto. Sin Microsoft Fabric.</div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-en">E-commerce operations dashboard. 2TB of real-time order data. Managers need to see order status by the minute. No Microsoft Fabric.</div>
+                    </div>
+                  </div>
+                  <div class="c4-options">
+                    <button class="c4-opt" onclick="answerC4(2,'Import',false)">Import</button>
+                    <button class="c4-opt" onclick="answerC4(2,'DirectQuery',true)">DirectQuery</button>
+                    <button class="c4-opt" onclick="answerC4(2,'DirectLake',false)">DirectLake</button>
+                  </div>
+                  <div id="c4-fb2" style="display:none;margin-top:6px;font-size:0.8rem;padding:8px;border-radius:6px;"></div>
+                </div>
+
+                <div class="c4-scenario" id="c4s3">
+                  <div class="c4-scenario-header">
+                    <span class="c4-num">3</span>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-es">Análisis de inventario de supply chain. 500GB en OneLake (Microsoft Fabric). El equipo necesita velocidad de Import pero con datos actualizados.</div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-en">Supply chain inventory analysis. 500GB in OneLake (Microsoft Fabric). Team needs Import speed but with current data.</div>
+                    </div>
+                  </div>
+                  <div class="c4-options">
+                    <button class="c4-opt" onclick="answerC4(3,'Import',false)">Import</button>
+                    <button class="c4-opt" onclick="answerC4(3,'DirectQuery',false)">DirectQuery</button>
+                    <button class="c4-opt" onclick="answerC4(3,'DirectLake',true)">DirectLake</button>
+                  </div>
+                  <div id="c4-fb3" style="display:none;margin-top:6px;font-size:0.8rem;padding:8px;border-radius:6px;"></div>
+                </div>
+
+                <div class="c4-scenario" id="c4s4">
+                  <div class="c4-scenario-header">
+                    <span class="c4-num">4</span>
+                    <div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-es">Reporte de ventas por categoría de producto. 50MB de Excel exportado desde ERP cada semana. Los analistas lo usan para revisiones semanales.</div>
+                      <div style="font-size:0.85rem;font-weight:600;" class="lang-en">Sales report by product category. 50MB Excel exported from ERP weekly. Analysts use it for weekly reviews.</div>
+                    </div>
+                  </div>
+                  <div class="c4-options">
+                    <button class="c4-opt" onclick="answerC4(4,'Import',true)">Import</button>
+                    <button class="c4-opt" onclick="answerC4(4,'DirectQuery',false)">DirectQuery</button>
+                    <button class="c4-opt" onclick="answerC4(4,'DirectLake',false)">DirectLake</button>
+                  </div>
+                  <div id="c4-fb4" style="display:none;margin-top:6px;font-size:0.8rem;padding:8px;border-radius:6px;"></div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
 
       <!-- TAB: QUIZ -->
@@ -2592,26 +3132,78 @@
 </div>
 
 <script>
-// LANGUAGE TOGGLE
+// ── LANGUAGE ──
+let currentLang = 'es';
+
 function setLang(lang) {
+  currentLang = lang;
   const themeClass = [...document.body.classList].find(c => c.startsWith('theme-')) || '';
   document.body.className = (themeClass ? themeClass + ' ' : '') + 'lang-active-' + lang;
-  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
-  document.querySelector(`.lang-btn[onclick="setLang('${lang}')"]`).classList.add('active');
+  // Update single toggle button: show the OTHER language
+  const btn = document.getElementById('langToggleBtn');
+  if (btn) btn.textContent = lang === 'es' ? 'EN' : 'ES';
 }
 
-// THEME TOGGLE
-function setTheme(theme, btn) {
-  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+function toggleLang() {
+  setLang(currentLang === 'es' ? 'en' : 'es');
+}
+
+// ── THEME ──
+let currentTheme = 'default';
+const themeIcons = { default: '🌑', darker: '⬛', sepia: '📜' };
+
+function setTheme(theme) {
+  currentTheme = theme;
   const langClass = [...document.body.classList].find(c => c.startsWith('lang-active-')) || 'lang-active-es';
   document.body.className = langClass + (theme !== 'default' ? ' theme-' + theme : '');
+  // Update dropdown button icon
+  const iconEl = document.getElementById('themeIcon');
+  if (iconEl) iconEl.textContent = themeIcons[theme];
+  // Update active state
+  ['default','darker','sepia'].forEach(t => {
+    const opt = document.getElementById('themeOpt-' + t);
+    if (opt) opt.classList.toggle('active', t === theme);
+  });
+  closeThemeMenu();
 }
 
-// BILINGUAL ALERT
+function toggleThemeMenu() {
+  document.getElementById('themeMenu').classList.toggle('open');
+}
+
+function closeThemeMenu() {
+  const m = document.getElementById('themeMenu');
+  if (m) m.classList.remove('open');
+}
+
+// Close theme menu on outside click
+document.addEventListener('click', function(e) {
+  const dd = document.getElementById('themeDropdown');
+  if (dd && !dd.contains(e.target)) closeThemeMenu();
+});
+
+// ── SIDEBAR MOBILE ──
+function toggleSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const fab = document.getElementById('fabBtn');
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('visible');
+  fab.textContent = sidebar.classList.contains('open') ? '✕' : '☰';
+}
+
+function closeSidebar() {
+  const sidebar = document.querySelector('.sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  const fab = document.getElementById('fabBtn');
+  sidebar.classList.remove('open');
+  overlay.classList.remove('visible');
+  fab.textContent = '☰';
+}
+
+// ── BILINGUAL ALERT ──
 function alertBilingual(es, en) {
-  const isEn = document.body.classList.contains('lang-active-en');
-  alert(isEn ? en : es);
+  alert(currentLang === 'en' ? en : es);
 }
 
 // PAGE NAV
@@ -3028,6 +3620,130 @@ function resetQuiz() {
   document.querySelectorAll('.quiz-feedback').forEach(f => f.className = 'quiz-feedback');
   document.querySelectorAll('[id^="next"]').forEach(b => b.style.display = 'none');
 }
+
+// ── CHALLENGE ACCORDION ──
+function toggleChallenge(id) {
+  const body = document.getElementById(id + '-body');
+  const chevron = document.getElementById(id + '-chevron');
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  chevron.style.transform = isOpen ? '' : 'rotate(180deg)';
+  if (!isOpen && id === 'c2') { /* no charts needed */ }
+}
+
+// ── RETO 2: QUERY STEPS ──
+let c2answered = false;
+function clickStep(id, isWrong) {
+  if (c2answered) return;
+  c2answered = true;
+  const steps = document.querySelectorAll('.query-step');
+  steps.forEach(s => {
+    if (s.id === id) {
+      s.classList.add(isWrong ? 'step-wrong' : 'step-correct');
+    } else {
+      s.classList.add('step-not-this');
+    }
+  });
+  if (isWrong) {
+    document.getElementById('c2-solution').classList.add('visible');
+  } else {
+    const hint = document.getElementById('c2-hint');
+    hint.classList.add('visible');
+    hint.innerHTML = '✅ <span class="lang-es-inline">Correcto. El paso de filtro por región está en posición incorrecta — usa una columna que aún no ha sido renombrada.</span><span class="lang-en-inline">Correct. The region filter step is in the wrong position — it references a column that hasn't been renamed yet.</span>';
+    hint.style.background = 'rgba(16,185,129,0.08)';
+    hint.style.borderColor = 'rgba(16,185,129,0.2)';
+    hint.style.color = 'var(--success)';
+    document.getElementById('c2-solution').classList.add('visible');
+  }
+}
+function resetC2() {
+  c2answered = false;
+  document.querySelectorAll('.query-step').forEach(s => {
+    s.classList.remove('step-wrong','step-correct','step-not-this');
+  });
+  document.getElementById('c2-hint').classList.remove('visible');
+  document.getElementById('c2-solution').classList.remove('visible');
+}
+
+// ── RETO 3: CLASSIFY TRANSFORMATION ──
+let c3scores = {1:null,2:null,3:null};
+const c3feedback = {
+  1: {
+    correct: { es: '✅ Unpivot. Las columnas Jan, Feb, Mar se convierten en filas — formato long que DAX necesita para Time Intelligence.', en: '✅ Unpivot. Jan, Feb, Mar columns become rows — the long format DAX needs for Time Intelligence.' },
+    wrong: { es: '❌ Incorrecto. El resultado muestra más filas (long format) con columnas Month y Sales. Eso es Unpivot — convierte columnas en filas.', en: '❌ Incorrect. The result shows more rows (long format) with Month and Sales columns. That is Unpivot — it converts columns into rows.' }
+  },
+  2: {
+    correct: { es: '✅ Merge. Dos tablas unidas por ProdID (Left Outer Join) — trae ProdName a la tabla de Orders. Exactamente lo que hace un JOIN en SQL.', en: '✅ Merge. Two tables joined by ProdID (Left Outer Join) — brings ProdName into the Orders table. Exactly what a SQL JOIN does.' },
+    wrong: { es: '❌ Incorrecto. El resultado combina columnas de dos tablas distintas usando ProdID como llave. Eso es Merge (Join) — no agrega filas, agrega columnas.', en: '❌ Incorrect. The result combines columns from two different tables using ProdID as a key. That is Merge (Join) — it adds columns, not rows.' }
+  },
+  3: {
+    correct: { es: '✅ Group By. 4 filas de transacciones → 2 filas por región con SUM(Amount) y COUNT(OrderID). Reduce granularidad y agrega.', en: '✅ Group By. 4 transaction rows → 2 region rows with SUM(Amount) and COUNT(OrderID). Reduces granularity and aggregates.' },
+    wrong: { es: '❌ Incorrecto. El resultado agrupa por región y suma valores. Eso es Group By — reduce filas aplicando una función de agregación.', en: '❌ Incorrect. The result groups by region and sums values. That is Group By — it reduces rows by applying an aggregation function.' }
+  }
+};
+
+function answerC3(caseNum, answer, isCorrect) {
+  if (c3scores[caseNum] !== null) return;
+  c3scores[caseNum] = isCorrect;
+  const container = document.getElementById('c3case' + caseNum);
+  const opts = container.querySelectorAll('.c3-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o.textContent.trim() === answer) o.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+  const lang = currentLang;
+  const fb = document.getElementById('c3-fb' + caseNum);
+  fb.style.display = 'block';
+  fb.textContent = c3feedback[caseNum][isCorrect ? 'correct' : 'wrong'][lang];
+  fb.style.background = isCorrect ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)';
+  fb.style.color = isCorrect ? 'var(--success)' : '#fca5a5';
+  fb.style.border = isCorrect ? '1px solid rgba(16,185,129,0.2)' : '1px solid rgba(239,68,68,0.2)';
+  const correct = Object.values(c3scores).filter(v => v === true).length;
+  document.getElementById('c3correct').textContent = correct;
+}
+
+// ── RETO 4: CONNECTION MODE ──
+let c4scores = {1:null,2:null,3:null,4:null};
+const c4feedback = {
+  1: {
+    correct: { es: '✅ Import. 200MB está bien dentro del límite. Se actualiza una vez al día — no necesita real-time. Import da la máxima velocidad para el CFO.', en: '✅ Import. 200MB is well within the limit. Updated once a day — no real-time needed. Import gives maximum speed for the CFO.' },
+    wrong: { es: '❌ Incorrecto. 200MB, actualización diaria, sin necesidad de real-time → Import es la elección óptima: máxima velocidad, DAX completo, sin complejidad adicional.', en: '❌ Incorrect. 200MB, daily refresh, no real-time need → Import is the optimal choice: maximum speed, full DAX, no added complexity.' }
+  },
+  2: {
+    correct: { es: '✅ DirectQuery. 2TB supera el límite de Import (~1GB). Datos en tiempo real al minuto. Sin Fabric → DirectLake no aplica. DirectQuery es la única opción válida.', en: '✅ DirectQuery. 2TB exceeds Import limit (~1GB). Real-time data by the minute. No Fabric → DirectLake doesn't apply. DirectQuery is the only valid option.' },
+    wrong: { es: '❌ Incorrecto. Import no puede con 2TB ni con datos al minuto. DirectLake requiere Fabric (no disponible). Solo DirectQuery conecta a la fuente en tiempo real sin límite de tamaño.', en: '❌ Incorrect. Import cannot handle 2TB or per-minute data. DirectLake requires Fabric (not available). Only DirectQuery connects to the source in real-time without size limits.' }
+  },
+  3: {
+    correct: { es: '✅ DirectLake. Datos en OneLake (Fabric disponible), 500GB (demasiado para Import), velocidad necesaria. DirectLake es exactamente para este caso: velocidad de Import + datos actualizados en Fabric.', en: '✅ DirectLake. Data in OneLake (Fabric available), 500GB (too large for Import), speed required. DirectLake is exactly for this case: Import speed + current data in Fabric.' },
+    wrong: { es: '❌ Incorrecto. Tienen Microsoft Fabric con datos en OneLake → DirectLake es la respuesta perfecta. Import no puede con 500GB. DirectQuery sería lento. DirectLake combina lo mejor de ambos.', en: '❌ Incorrect. They have Microsoft Fabric with data in OneLake → DirectLake is the perfect answer. Import can't handle 500GB. DirectQuery would be slow. DirectLake combines the best of both.' }
+  },
+  4: {
+    correct: { es: '✅ Import. 50MB, actualización semanal, fuente Excel → Import es la elección obvia. Máxima velocidad, DAX completo, tamaño mínimo. Import siempre es la primera opción cuando el tamaño y la frecuencia lo permiten.', en: '✅ Import. 50MB, weekly refresh, Excel source → Import is the obvious choice. Maximum speed, full DAX, minimal size. Import is always the first option when size and frequency allow it.' },
+    wrong: { es: '❌ Incorrecto. 50MB de Excel con refresh semanal no necesita DirectQuery ni DirectLake. Import es perfecto: tamaño pequeño, sin necesidad real-time, máxima performance para análisis.', en: '❌ Incorrect. 50MB Excel with weekly refresh doesn't need DirectQuery or DirectLake. Import is perfect: small size, no real-time need, maximum performance for analysis.' }
+  }
+};
+
+function answerC4(scenarioNum, answer, isCorrect) {
+  if (c4scores[scenarioNum] !== null) return;
+  c4scores[scenarioNum] = isCorrect;
+  const container = document.getElementById('c4s' + scenarioNum);
+  const opts = container.querySelectorAll('.c4-opt');
+  opts.forEach(o => {
+    o.disabled = true;
+    if (o.textContent.trim() === answer) o.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+  container.classList.add(isCorrect ? 'answered-correct' : 'answered-wrong');
+  const lang = currentLang;
+  const fb = document.getElementById('c4-fb' + scenarioNum);
+  fb.style.display = 'block';
+  fb.textContent = c4feedback[scenarioNum][isCorrect ? 'correct' : 'wrong'][lang];
+  fb.style.background = isCorrect ? 'rgba(16,185,129,0.08)' : 'rgba(239,68,68,0.08)';
+  fb.style.color = isCorrect ? 'var(--success)' : '#fca5a5';
+  fb.style.border = isCorrect ? '1px solid rgba(16,185,129,0.2)' : '1px solid rgba(239,68,68,0.2)';
+  const correct = Object.values(c4scores).filter(v => v === true).length;
+  document.getElementById('c4correct').textContent = correct;
+}
+
 </script>
 </body>
 </html>
